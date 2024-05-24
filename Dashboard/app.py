@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import os
 import pytz
 import time
+from geopy.geocoders import Nominatim
 
 # Titulli i aplikacionit
 st.title('Weather Dashboard')
@@ -34,21 +35,30 @@ df = pd.read_csv(get_file_path(data_file))
 # Convert the timestamp column to datetime
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-# Set timezone to GMT+2
-tz = pytz.timezone('Europe/Bucharest')
+# Set timezone to GMT+1
+tz = pytz.timezone('Europe/Berlin')
 
-# Function to get the current time in GMT+2
-def get_current_time_gmt_plus_2():
+# Function to get the current time in GMT+1
+def get_current_time_gmt_plus_1():
     return datetime.now(tz)
 
 # Filter data for the current date
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
+# Function to get the current location
+def get_current_location():
+    try:
+        geolocator = Nominatim(user_agent="geoapiExercises")
+        location = geolocator.geocode("Los Angeles, CA")  # Replace with dynamic location fetch if needed
+        return f"{location.address}"
+    except:
+        return "Location not available"
+
 # Main dashboard function
 def main():
-    # Get current datetime in GMT+2
-    current_datetime = get_current_time_gmt_plus_2()
+    # Get current datetime in GMT+1
+    current_datetime = get_current_time_gmt_plus_1()
 
     # Filter data for the current date
     df_today = get_today_data(df, current_datetime)
@@ -61,7 +71,7 @@ def main():
         return
 
     # Lokacioni aktual
-    current_location = 'Los Angeles, CA, USA'
+    current_location = get_current_location()
     st.subheader(f'Current Location: {current_location}')
 
     # Ikona e motit dhe temperatura
@@ -83,9 +93,7 @@ def main():
 
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
-    days = ['Tuesday', 'Wednesday', 'Thursday']
     forecast_data = {
-        'Day': days,
         'TC_predicted': df['TC_predicted'][:3],
         'HUM_predicted': df['HUM_predicted'][:3],
         'PRES_predicted': df['PRES_predicted'][:3],
@@ -94,13 +102,12 @@ def main():
     }
     df_forecast = pd.DataFrame(forecast_data)
 
+    cols = st.columns(5)
     for i in range(len(df_forecast)):
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric(df_forecast['Day'][i], f"{df_forecast['TC_predicted'][i]:.2f}°C")
-        col2.metric("Humidity", f"{df_forecast['HUM_predicted'][i]}%")
-        col3.metric("Pressure", f"{df_forecast['PRES_predicted'][i]:.2f}")
-        col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
-        col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
+        for j, col in enumerate(cols):
+            if i == 0:
+                col.metric("Day", "Day")
+            col.metric(df_forecast.columns[j], f"{df_forecast.iloc[i, j]:.2f}")
 
     # Analitika e temperaturës për ditën
     st.subheader('Temperature Analytics')
