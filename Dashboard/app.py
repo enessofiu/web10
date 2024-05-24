@@ -107,7 +107,7 @@ def main():
     df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
     fig, ax = plt.subplots()
-    ax.plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+    ax.plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
     ax.set_xlabel('Time')
     ax.set_ylabel('Temperature (°C)')
     st.pyplot(fig)
