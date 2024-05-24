@@ -24,7 +24,7 @@ def get_file_path(filename):
     return os.path.join(current_dir, filename)
 
 # Define the filename
-data_file = "cleaned_data.csv"
+data_file = "predicted_data_2024.csv"
 
 # Load dataset
 df = pd.read_csv(get_file_path(data_file))
