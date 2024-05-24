@@ -40,22 +40,27 @@ def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
 # Function to calculate forecast for the next three days
+# Function to calculate forecast for the next three days
 def calculate_three_days_forecast(df_today):
     forecast_data = []
+    current_date = df_today.iloc[-1]['timestamp'].date()
     for i in range(3):
-        if not df_today.empty:
+        # Filter data for the current date
+        df_current_day = df_today[df_today['timestamp'].dt.date == current_date]
+        if not df_current_day.empty:
             forecast_data.append({
-                'TC_predicted': df_today.iloc[-1]['TC_predicted'],
-                'HUM_predicted': df_today.iloc[-1]['HUM_predicted'],
-                'PRES_predicted': df_today.iloc[-1]['PRES_predicted'],
-                'US_predicted': df_today.iloc[-1]['US_predicted'],
-                'SOIL1_predicted': df_today.iloc[-1]['SOIL1_predicted']
+                'TC_predicted': df_current_day.iloc[-1]['TC_predicted'],
+                'HUM_predicted': df_current_day.iloc[-1]['HUM_predicted'],
+                'PRES_predicted': df_current_day.iloc[-1]['PRES_predicted'],
+                'US_predicted': df_current_day.iloc[-1]['US_predicted'],
+                'SOIL1_predicted': df_current_day.iloc[-1]['SOIL1_predicted']
             })
         else:
             forecast_data.append({})
-        # Increment the date for the next day
-        df_today = df_today[df_today['timestamp'].dt.date == (df_today.iloc[-1]['timestamp'].date() + timedelta(days=1))]
+        # Move to the next day
+        current_date += timedelta(days=1)
     return forecast_data
+
 
 # Main dashboard function
 def main():
