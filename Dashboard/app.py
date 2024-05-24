@@ -2,12 +2,32 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+import os
 
 # Titulli i aplikacionit
 st.title('Weather Dashboard')
 
+# Get the absolute path to the current directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Function to construct the file path
+def get_file_path(filename):
+    """
+    Constructs the absolute path to the data file.
+
+    Args:
+        filename (str): The name of the data file (e.g., "cleaned_data.csv").
+
+    Returns:
+        str: The absolute path to the data file.
+    """
+    return os.path.join(current_dir, filename)
+
+# Define the filename
+data_file = "cleaned_data.csv"
+
 # Load dataset
-df = pd.read_csv('cleaned_data.csv')
+df = pd.read_csv(get_file_path(data_file))
 
 # Convert the timestamp column to datetime
 df['timestamp'] = pd.to_datetime(df['timestamp'])
@@ -19,7 +39,11 @@ current_datetime = datetime.now()
 df_today = df[df['timestamp'].dt.date == current_datetime.date()]
 
 # Extract the latest data point for current conditions
-current_data = df_today.iloc[-1]
+if not df_today.empty:
+    current_data = df_today.iloc[-1]
+else:
+    st.error("No data available for today.")
+    st.stop()
 
 # Lokacioni aktual
 current_location = 'Los Angeles, CA, USA'
