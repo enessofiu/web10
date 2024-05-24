@@ -14,9 +14,8 @@ def get_file_path(filename):
     Returns:
         str: The absolute path to the data file.
     """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(_file_))
     return os.path.join(current_dir, filename)
-
 
 def load_data(file_path):
     """
@@ -28,11 +27,7 @@ def load_data(file_path):
     Returns:
         pandas.DataFrame: The loaded data as a pandas DataFrame.
     """
-    data = pd.read_csv(file_path)
-    # Add any necessary data processing steps here (e.g., handling missing values)
-    # ...
-    return data
-
+    return pd.read_csv(file_path)
 
 def get_data_path():
     """
@@ -45,9 +40,8 @@ def get_data_path():
     data_path = "cleaned_data.csv"
     return data_path
 
-
 # Load custom CSS
-css_file_path = os.path.join(os.path.dirname(__file__), "..", "styles.css")
+css_file_path = os.path.join(os.path.dirname(_file_), "..", "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
@@ -62,33 +56,53 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 soil_data = data[['timestamp', 'SOIL1']]
 
 # Page title
-st.title("Soil Moisture (SOIL1) Visualizations")
+st.markdown("<div class='header'>Soil Moisture (SOIL1) Visualizations</div>", unsafe_allow_html=True)
 
-# Line Chart (displayed only on the first page load)
-st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
-st.line_chart(soil_data.set_index('timestamp')['SOIL1'])
+# Page title
+st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+
+# Initialize or get the session state to track the current chart type
+if 'current_chart' not in st.session_state:
+    st.session_state.current_chart = 'line'
 
 # Arrange buttons in a single row
 col1, col2, col3, col4 = st.columns(4)
 
+# Button to show Line Chart
+if col1.button("Show Line Chart"):
+    st.session_state.current_chart = 'line'
+
 # Button to show Bar Chart
-if col1.button("Show Soil Moisture Distribution"):
-    st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
-    st.bar_chart(soil_data.set_index('timestamp')['SOIL1'])
+if col2.button("Show Soil Moisture Distribution"):
+    st.session_state.current_chart = 'bar'
 
 # Button to show Pie Chart
-if col2.button("Show Soil Moisture Proportions"):
+if col3.button("Show Soil Moisture Proportions"):
+    st.session_state.current_chart = 'pie'
+
+# Button to show Scatter Plot
+if col4.button("Show Soil Moisture Scatter Plot"):
+    st.session_state.current_chart = 'scatter'
+
+# Display the corresponding chart based on the current chart type
+if st.session_state.current_chart == 'line':
+    st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
+    st.line_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
+
+elif st.session_state.current_chart == 'bar':
+    st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
+    st.bar_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
+
+elif st.session_state.current_chart == 'pie':
     st.markdown("<div class='card'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
     soil_bins = pd.cut(soil_data['SOIL1'], bins=5)
     soil_pie_data = soil_bins.value_counts().reset_index()
-    soil_pie_data.columns = ['Soil Moisture Range', 'Count'] 
-    # Rename columns
+    soil_pie_data.columns = ['Soil Moisture Range', 'Count']
     fig, ax = plt.subplots()
     ax.pie(soil_pie_data['Count'], labels=soil_pie_data['Soil Moisture Range'], autopct='%1.1f%%')
     st.pyplot(fig)
 
-# Button to show Scatter Plot
-if col3.button("Show Soil Moisture Scatter Plot"):
+elif st.session_state.current_chart == 'scatter':
     st.markdown("<div class='card'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='SOIL1', data=soil_data, ax=ax)
