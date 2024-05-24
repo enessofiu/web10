@@ -46,7 +46,7 @@ avg_values_today = calculate_averages_today(data)
 predicted_data = pd.read_csv(get_file_path('predicted_data_2024.csv'))
 
 # Get today's predicted averages
-today_predicted_data = predicted_data[predicted_data['Date'] == str(datetime.now().date())].iloc[0]
+today_predicted_data = predicted_data[predicted_data['timestamp'] == str(datetime.now().date())].iloc[0]
 
 # Page title
 st.title("Welcome to the Smart Agriculture Dashboard")
