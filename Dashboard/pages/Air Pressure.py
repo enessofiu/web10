@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import os
 
 # Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(_file_))
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load custom CSS
-css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
