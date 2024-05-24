@@ -109,16 +109,49 @@ def main():
         with col5:
             st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
-    # Temperature and Humidity Analytics for Today
-    st.subheader('Temperature Analytics')
-    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
+# Temperature and Humidity Analytics for Today
+st.subheader('Analytics for Today')
 
-    fig, ax = plt.subplots(2)
-    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
-    ax[0].set_ylabel('Temperature (°C)')
-    ax[1].set_ylabel('Humidity (%)')
-    st.pyplot(fig)
+# Resample the data for visualization
+df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()
+
+# Create subplots
+fig, ax = plt.subplots(3, 2, figsize=(10, 10))
+
+# Plot temperature
+ax[0, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+ax[0, 0].set_ylabel('Temperature (°C)')
+ax[0, 0].set_title('Temperature')
+
+# Plot humidity
+ax[0, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
+ax[0, 1].set_ylabel('Humidity (%)')
+ax[0, 1].set_title('Humidity')
+
+# Plot pressure
+ax[1, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['PRES_predicted'], marker='o')
+ax[1, 0].set_ylabel('Pressure')
+ax[1, 0].set_title('Pressure')
+
+# Plot US
+ax[1, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['US_predicted'], marker='o')
+ax[1, 1].set_ylabel('US')
+ax[1, 1].set_title('US')
+
+# Plot Soil
+ax[2, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['SOIL1_predicted'], marker='o')
+ax[2, 0].set_ylabel('Soil')
+ax[2, 0].set_title('Soil')
+
+# Hide the empty subplot
+ax[2, 1].axis('off')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
+st.pyplot(fig)
+
 
 # Run the main function
 if __name__ == '__main__':
