@@ -5,9 +5,8 @@ from datetime import datetime, timedelta
 import os
 import pytz
 import time
-from geopy.geocoders import Nominatim
 
-# Title of the application
+# Titulli i aplikacionit
 st.title('Weather Dashboard')
 
 # Get the absolute path to the current directory
@@ -15,6 +14,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Function to construct the file path
 def get_file_path(filename):
+    """
+    Constructs the absolute path to the data file.
+
+    Args:
+        filename (str): The name of the data file (e.g., "predicted_data_2024.csv").
+
+    Returns:
+        str: The absolute path to the data file.
+    """
     return os.path.join(current_dir, filename)
 
 # Define the filename
@@ -27,7 +35,7 @@ df = pd.read_csv(get_file_path(data_file))
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 
 # Set timezone to GMT+1
-tz = pytz.timezone('Europe/Berlin')
+tz = pytz.timezone('Europe/Belgrade')  # Prizren is in the same timezone as Belgrade
 
 # Function to get the current time in GMT+1
 def get_current_time_gmt_plus_1():
@@ -36,15 +44,6 @@ def get_current_time_gmt_plus_1():
 # Filter data for the current date
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
-
-# Function to get the current location
-def get_current_location():
-    try:
-        geolocator = Nominatim(user_agent="geoapiExercises")
-        location = geolocator.geocode("Los Angeles, CA")  # Replace with dynamic location fetch if needed
-        return f"{location.address}"
-    except:
-        return "Location not available"
 
 # Main dashboard function
 def main():
@@ -61,11 +60,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Current location
-    current_location = get_current_location()
+    # Lokacioni aktual
+    current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Weather icon and temperature
+    # Ikona e motit dhe temperatura
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -74,7 +73,7 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Today's Highlights
+    # Pikat kryesore të ditës
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
@@ -82,10 +81,11 @@ def main():
     col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
     col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-    # 3 Days Forecast
+    # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
+    days = ['Tuesday', 'Wednesday', 'Thursday']
     forecast_data = {
-        'Day': ['Tuesday', 'Wednesday', 'Thursday'],
+        'Day': days,
         'TC_predicted': df['TC_predicted'][:3],
         'HUM_predicted': df['HUM_predicted'][:3],
         'PRES_predicted': df['PRES_predicted'][:3],
@@ -94,19 +94,23 @@ def main():
     }
     df_forecast = pd.DataFrame(forecast_data)
 
-    cols = st.columns(5)
     for i in range(len(df_forecast)):
-        for j, col in enumerate(cols):
-            col.metric(df_forecast.columns[j], f"{df_forecast.iloc[i, j]:.2f}")
+        col1, col2, col3, col4, col5 = st.columns(5)
+        col1.metric(days[i], f"{df_forecast['TC_predicted'][i]:.2f}°C")
+        col2.metric("Humidity", f"{df_forecast['HUM_predicted'][i]}%")
+        col3.metric("Pressure", f"{df_forecast['PRES_predicted'][i]:.2f}")
+        col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
+        col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
 
-    # Temperature Analytics for the day
+    # Analitika e temperaturës për ditën
     st.subheader('Temperature Analytics')
     df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
-    fig, ax = plt.subplots()
-    ax.plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Temperature (°C)')
+    fig, ax = plt.subplots(2)
+    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
+    ax[0].set_ylabel('Temperature (°C)')
+    ax[1].set_ylabel('Humidity (%)')
     st.pyplot(fig)
 
     # Footer
