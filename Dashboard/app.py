@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
 import pytz
@@ -83,25 +82,15 @@ def main():
 
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
-    days = ['Tuesday', 'Wednesday', 'Thursday']
-    forecast_data = {
-        'Day': days,
-        'TC_predicted': df['TC_predicted'][:3],
-        'HUM_predicted': df['HUM_predicted'][:3],
-        'PRES_predicted': df['PRES_predicted'][:3],
-        'US_predicted': df['US_predicted'][:3],
-        'SOIL1_predicted': df['SOIL1_predicted'][:3]
-    }
-    df_forecast = pd.DataFrame(forecast_data)
+    forecast_days = [(current_datetime + timedelta(days=i)).strftime('%A') for i in range(1, 4)]
 
-    for i in range(len(df_forecast)):
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric(days[i], f"{df_forecast['TC_predicted'][i]:.2f}°C")
-        col2.metric("Humidity", f"{df_forecast['HUM_predicted'][i]}%")
-        col3.metric("Pressure", f"{df_forecast['PRES_predicted'][i]:.2f}")
-        col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
-        col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
-
+    for day in forecast_days:
+        st.subheader(day)
+        st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
+        st.metric("Humidity", f"{current_data['HUM_predicted']}%")
+        st.metric("Pressure", f"{current_data['PRES_predicted']:.2f}")
+        st.metric("US", f"{current_data['US_predicted']:.2f}")
+        st.metric("Soil", f"{current_data['SOIL1_predicted']:.2f}")
 
     # Automatically refresh the page every second to update the time display
     time.sleep(1)
