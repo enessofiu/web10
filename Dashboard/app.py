@@ -16,7 +16,7 @@ def get_file_path(filename):
     Constructs the absolute path to the data file.
 
     Args:
-        filename (str): The name of the data file (e.g., "cleaned_data.csv").
+        filename (str): The name of the data file (e.g., "predicted_data_2024.csv").
 
     Returns:
         str: The absolute path to the data file.
@@ -54,7 +54,7 @@ col1, col2 = st.columns([3, 1])
 with col1:
     st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
 with col2:
-    st.markdown(f"### {current_data['TC']}°C")
+    st.markdown(f"### {current_data['TC_predicted']}°C")
     st.markdown(f"#### {current_datetime.strftime('%A, %I:%M %p')}")
     st.markdown('##### Partly Cloudy')
 
@@ -62,7 +62,7 @@ with col2:
 st.subheader("Today's Highlights")
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
-col2.metric("Humidity", f"{current_data['HUM']}%")
+col2.metric("Humidity", f"{current_data['HUM_predicted']}%")
 col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
 col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
@@ -98,7 +98,7 @@ st.subheader('Temperature Analytics')
 df_today = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
 fig, ax = plt.subplots()
-ax.plot(df_today.index.strftime('%I %p'), df_today['TC'], marker='o')
+ax.plot(df_today.index.strftime('%I %p'), df_today['TC_predicted'], marker='o')
 ax.set_xlabel('Time')
 ax.set_ylabel('Temperature (°C)')
 st.pyplot(fig)
