@@ -6,20 +6,28 @@ import os
 import pytz
 import time
 
-# Title of the app
-st.set_page_config(layout="wide")
+# Titulli i aplikacionit
 st.title('Weather Dashboard')
 
-# Load custom CSS
-css_file_path = "styles.css"  # Ensure you have a CSS file named "styles.css" in the same directory
+# Load custom CSS (assuming your CSS file is named "styles.css")
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(os.path.abspath(_file_))
 
 # Function to construct the file path
 def get_file_path(filename):
+    """
+    Constructs the absolute path to the data file.
+
+    Args:
+        filename (str): The name of the data file (e.g., "predicted_data_2024.csv").
+
+    Returns:
+        str: The absolute path to the data file.
+    """
     return os.path.join(current_dir, filename)
 
 # Define the filename
@@ -57,28 +65,28 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Current location
+    # Lokacioni aktual
     current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Weather icon and temperature
+    # Ikona e motit dhe temperatura
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
     with col2:
         st.markdown(f"### {current_data['TC_predicted']:.2f}°C")
-        st.markdown(f"#### {current_datetime.strftime('%A, %I:%M %p')}")
+        st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Today's Highlights
+    # Pikat kryesore të ditës
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Precipitation", "2%")
+    col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
     col2.metric("Humidity", f"{current_data['HUM_predicted']}%")
-    col3.metric("Wind", "0 km/h")
-    col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")
+    col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
+    col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-    # 3 Days Forecast
+    # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
     days = ['Tuesday', 'Wednesday', 'Thursday']
     forecast_data = {
@@ -91,16 +99,28 @@ def main():
     }
     df_forecast = pd.DataFrame(forecast_data)
     
-    for i in range(len(df_forecast)):
-        st.markdown(f"{df_forecast['Day'][i]}")
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{df_forecast['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
-        col2.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{df_forecast['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
-        col3.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{df_forecast['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-        col4.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{df_forecast['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-        col5.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{df_forecast['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
-    # Temperature Analytics
+    for i in range(len(df_forecast)):
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{df_forecast['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
+        with col2:
+            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{df_forecast['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
+        with col3:
+            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{df_forecast['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+        with col4:
+            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{df_forecast['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+        with col5:
+            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{df_forecast['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+
+
+
+    # Mbyllja e div container
+    st.markdown("""
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Analitika e temperaturës për ditën
     st.subheader('Temperature Analytics')
     df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
@@ -111,6 +131,13 @@ def main():
     ax[1].set_ylabel('Humidity (%)')
     st.pyplot(fig)
 
+
+
 # Run the main function
-if name == 'main':
+if _name_ == '_main_':
     main()
+
+# Automatically refresh the page every second to update the time display
+while True:
+    time.sleep(1)
+    st.experimental_rerun()
