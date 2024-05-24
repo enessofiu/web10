@@ -54,18 +54,21 @@ pres_data = data[['timestamp', 'PRES']]
 # Page title
 st.title("Air Pressure (PRES) Visualizations")
 
+# Arrange buttons in a single row
+col1, col2, col3, col4 = st.columns(4)
+
 # Button to show Line Chart
-if st.button("Show Air Pressure Over Time"):
+if col1.button("Show Air Pressure Over Time"):
     st.markdown("<div class='card'><h3>Air Pressure Over Time</h3></div>", unsafe_allow_html=True)
     st.line_chart(pres_data.set_index('timestamp')['PRES'])
 
 # Button to show Bar Chart
-if st.button("Show Air Pressure Distribution"):
+if col2.button("Show Air Pressure Distribution"):
     st.markdown("<div class='card'><h3>Air Pressure Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(pres_data.set_index('timestamp')['PRES'])
 
 # Button to show Pie Chart
-if st.button("Show Air Pressure Proportions"):
+if col3.button("Show Air Pressure Proportions"):
     st.markdown("<div class='card'><h3>Air Pressure Proportions</h3></div>", unsafe_allow_html=True)
     pres_bins = pd.cut(pres_data['PRES'], bins=5)
     pres_pie_data = pres_bins.value_counts().reset_index()
@@ -75,7 +78,7 @@ if st.button("Show Air Pressure Proportions"):
     st.pyplot(fig)
 
 # Button to show Scatter Plot
-if st.button("Show Air Pressure Scatter Plot"):
+if col4.button("Show Air Pressure Scatter Plot"):
     st.markdown("<div class='card'><h3>Air Pressure Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='PRES', data=pres_data, ax=ax)
