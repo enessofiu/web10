@@ -84,13 +84,23 @@ def main():
     st.subheader('3 Days Forecast')
     forecast_days = [(current_datetime + timedelta(days=i)).strftime('%A') for i in range(1, 4)]
 
-    for day in forecast_days:
-        st.subheader(day)
-        st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
-        st.metric("Humidity", f"{current_data['HUM_predicted']}%")
-        st.metric("Pressure", f"{current_data['PRES_predicted']:.2f}")
-        st.metric("US", f"{current_data['US_predicted']:.2f}")
-        st.metric("Soil", f"{current_data['SOIL1_predicted']:.2f}")
+    # Organize forecast days in rows
+    col1, col2, col3 = st.columns(3)
+    for i, day in enumerate(forecast_days):
+        if i % 3 == 0:
+            col = col1
+        elif i % 3 == 1:
+            col = col2
+        else:
+            col = col3
+        
+        with col:
+            st.subheader(day)
+            st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
+            st.metric("Humidity", f"{current_data['HUM_predicted']}%")
+            st.metric("Pressure", f"{current_data['PRES_predicted']:.2f}")
+            st.metric("US", f"{current_data['US_predicted']:.2f}")
+            st.metric("Soil", f"{current_data['SOIL1_predicted']:.2f}")
 
     # Automatically refresh the page every second to update the time display
     time.sleep(1)
