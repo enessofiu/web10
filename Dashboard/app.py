@@ -7,7 +7,7 @@ import pytz
 import time
 from geopy.geocoders import Nominatim
 
-# Titulli i aplikacionit
+# Title of the application
 st.title('Weather Dashboard')
 
 # Get the absolute path to the current directory
@@ -15,15 +15,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Function to construct the file path
 def get_file_path(filename):
-    """
-    Constructs the absolute path to the data file.
-
-    Args:
-        filename (str): The name of the data file (e.g., "predicted_data_2024.csv").
-
-    Returns:
-        str: The absolute path to the data file.
-    """
     return os.path.join(current_dir, filename)
 
 # Define the filename
@@ -70,11 +61,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Lokacioni aktual
+    # Current location
     current_location = get_current_location()
     st.subheader(f'Current Location: {current_location}')
 
-    # Ikona e motit dhe temperatura
+    # Weather icon and temperature
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -83,7 +74,7 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Pikat kryesore të ditës
+    # Today's Highlights
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
@@ -91,9 +82,10 @@ def main():
     col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
     col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-    # Parashikimi për 3 ditët e ardhshme
+    # 3 Days Forecast
     st.subheader('3 Days Forecast')
     forecast_data = {
+        'Day': ['Tuesday', 'Wednesday', 'Thursday'],
         'TC_predicted': df['TC_predicted'][:3],
         'HUM_predicted': df['HUM_predicted'][:3],
         'PRES_predicted': df['PRES_predicted'][:3],
@@ -105,11 +97,9 @@ def main():
     cols = st.columns(5)
     for i in range(len(df_forecast)):
         for j, col in enumerate(cols):
-            if i == 0:
-                col.metric("Day", "Day")
             col.metric(df_forecast.columns[j], f"{df_forecast.iloc[i, j]:.2f}")
 
-    # Analitika e temperaturës për ditën
+    # Temperature Analytics for the day
     st.subheader('Temperature Analytics')
     df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
