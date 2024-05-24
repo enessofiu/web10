@@ -102,25 +102,6 @@ def main():
         col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
         col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
 
-    # Plot for each metric
-    st.subheader('Analytics')
-
-    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
-
-    metrics = ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']
-
-    for i, metric in enumerate(metrics):
-        row = i // 3
-        col = i % 3
-        ax = axes[row, col]
-        ax.plot(df_today['timestamp'], df_today[metric])
-        ax.set_title(metric)
-        ax.set_xlabel('Time')
-        ax.set_ylabel(metric)
-
-    plt.tight_layout()
-    st.pyplot(fig)
-
     # Footer
     st.sidebar.header('Menu')
     st.sidebar.button('Home')
@@ -130,11 +111,10 @@ def main():
     st.sidebar.button('Calendar')
     st.sidebar.button('Settings')
 
+    # Automatically refresh the page every second to update the time display
+    time.sleep(1)
+    st.experimental_rerun()
+
 # Run the main function
 if __name__ == '__main__':
     main()
-
-# Automatically refresh the page every second to update the time display
-while True:
-    time.sleep(1)
-    st.experimental_rerun()
