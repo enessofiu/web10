@@ -159,7 +159,6 @@ def main():
         with col5:
             st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data_3_days['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
-
     # Temperature and Humidity Analytics for Today
     st.subheader('Analytics for Today')
 
