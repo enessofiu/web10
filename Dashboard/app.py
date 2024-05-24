@@ -1,10 +1,15 @@
 import streamlit as st
 import pandas as pd
 import os
-from datetime import datetime
+
+
+
+
 
 # Set page configuration
 st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
+
+
 
 # Load custom CSS
 css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
@@ -19,95 +24,75 @@ def get_file_path(filename):
     return os.path.join(current_dir, filename)
 
 # Cache the data loading function
-@st.cache
+@st.cache_data
 def load_data(file_path):
     data = pd.read_csv(file_path)
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     return data
 
-# Function to calculate average values for today's date
-def calculate_averages_today(data):
-    today = datetime.now().date()
-    today_data = data[data['timestamp'].dt.date == today]
-    avg_values_today = {
-        "TC": today_data["TC"].mean(),
-        "HUM": today_data["HUM"].mean(),
-        "PRES": today_data["PRES"].mean(),
-        "US": today_data["US"].mean(),
-        "SOIL1": today_data["SOIL1"].mean()
+
+# Cache the function to calculate average values
+@st.cache_data
+def calculate_averages(data):
+    avg_values = {
+        "TC": data["TC"].mean(),
+        "HUM": data["HUM"].mean(),
+        "PRES": data["PRES"].mean(),
+        "US": data["US"].mean(),
+        "SOIL1": data["SOIL1"].mean()
     }
-    return avg_values_today
+    return avg_values
+
+
 
 # Load the data
 data = load_data(get_file_path('cleaned_data.csv'))
-avg_values_today = calculate_averages_today(data)
-
-# Predicted data for 2024 (example data)
-predicted_data = pd.read_csv(get_file_path('predicted_data_2024.csv'))
-print("Predicted data:")
-print(predicted_data.head())  # Print the first few rows of predicted data for debugging
-
-# Get today's predicted averages if available
-today_predicted_data = None
-today_date_str = str(datetime.now().date())
-print("Today's date:", today_date_str)  # Debugging: print today's date
-if today_date_str in predicted_data['timestamp'].values:
-    today_predicted_data = predicted_data[predicted_data['timestamp'] == today_date_str].iloc[0]
-
-# Calculate average values for today's date
-if today_predicted_data is not None:
-    avg_values_today_predicted = {
-        "TC": today_predicted_data["TC_predicted"],
-        "HUM": today_predicted_data["HUM_predicted"],
-        "PRES": today_predicted_data["PRES_predicted"],
-        "US": today_predicted_data["US_predicted"],
-        "SOIL1": today_predicted_data["SOIL1_predicted"]
-    }
-else:
-    avg_values_today_predicted = None
+avg_values = calculate_averages(data)
 
 # Page title
 st.title("Welcome to the Smart Agriculture Dashboard")
+
+
 
 # Main content with average values
 st.markdown(f"""
 <div class="main">
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="temp-card">
+            <div class="card" onclick="navigateTo('/Temperature')">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                {f"<p id='temp-data'>Average: {avg_values_today_predicted['TC']:.2f}°C</p>" if avg_values_today_predicted is not None else "<p id='temp-data'>No data available</p>"}
+                <p>Average: {avg_values["TC"]:.2f}°C</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="hum-card">
+            <div class="card" onclick="navigateTo('/Humidity')">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                {f"<p id='hum-data'>Average: {avg_values_today_predicted['HUM']:.2f}%</p>" if avg_values_today_predicted is not None else "<p id='hum-data'>No data available</p>"}
+                <p>Average: {avg_values["HUM"]:.2f}%</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="pres-card">
+            <div class="card" onclick="navigateTo('/Air_Pressure')">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                {f"<p id='pres-data'>Average: {avg_values_today_predicted['PRES']:.2f} hPa</p>" if avg_values_today_predicted is not None else "<p id='pres-data'>No data available</p>"}
+                <p>Average: {avg_values["PRES"]:.2f} hPa</p>
             </div>
         </div>
     </div>
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="us-card">
+            <div class="card" onclick="navigateTo('/Ultrasound')">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                {f"<p id='us-data'>Average: {avg_values_today_predicted['US']:.2f}</p>" if avg_values_today_predicted is not None else "<p id='us-data'>No data available</p>"}
+                <p>Average: {avg_values["US"]:.2f}</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="soil-card">
+            <div class="card" onclick="navigateTo('/Soil_Moisture')">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                {f"<p id='soil-data'>Average: {avg_values_today_predicted['SOIL1']:.2f}%</p>" if avg_values_today_predicted is not None else "<p id='soil-data'>No data available</p>"}
+                <p>Average: {avg_values["SOIL1"]:.2f}%</p>
             </div>
         </div>
     </div>
@@ -145,23 +130,3 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
-
-# Javascript to handle hover effect and dynamic data
-javascript = """
-<script>
-document.querySelectorAll('.card').forEach(item => {
-    item.addEventListener('mouseover', event => {
-        item.style.transform = 'rotateY(180deg)';
-        item.style.transition = 'transform 0.5s ease';
-    });
-
-    item.addEventListener('mouseleave', event => {
-        item.style.transform = 'rotateY(0deg)';
-        item.style.transition = 'transform 0.5s ease';
-    });
-});
-
-</script>
-"""
-
-st.markdown(javascript, unsafe_allow_html=True)
