@@ -62,6 +62,32 @@ def calculate_actual_day_forecast(df_today):
         forecast_data = {}
     return forecast_data
 
+# Function to calculate forecast for the next 3 days
+def calculate_3_day_forecast(df, current_datetime):
+    forecast_data = {
+        'TC_predicted': [],
+        'HUM_predicted': [],
+        'PRES_predicted': [],
+        'US_predicted': [],
+        'SOIL1_predicted': []
+    }
+    for i in range(3):
+        next_date = current_datetime + timedelta(days=i+1)
+        df_next_day = df[df['timestamp'].dt.date == next_date.date()]
+        if not df_next_day.empty:
+            forecast_data['TC_predicted'].append(df_next_day.iloc[-1]['TC_predicted'])
+            forecast_data['HUM_predicted'].append(df_next_day.iloc[-1]['HUM_predicted'])
+            forecast_data['PRES_predicted'].append(df_next_day.iloc[-1]['PRES_predicted'])
+            forecast_data['US_predicted'].append(df_next_day.iloc[-1]['US_predicted'])
+            forecast_data['SOIL1_predicted'].append(df_next_day.iloc[-1]['SOIL1_predicted'])
+        else:
+            forecast_data['TC_predicted'].append(None)
+            forecast_data['HUM_predicted'].append(None)
+            forecast_data['PRES_predicted'].append(None)
+            forecast_data['US_predicted'].append(None)
+            forecast_data['SOIL1_predicted'].append(None)
+    return forecast_data
+
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -100,21 +126,39 @@ def main():
 
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
-    forecast_data = calculate_actual_day_forecast(df_today)
-    if forecast_data:
+    forecast_data_actual_day = calculate_actual_day_forecast(df_today)
+    if forecast_data_actual_day:
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
-            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data_actual_day['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
         with col2:
-            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data_actual_day['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
         with col3:
-            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data_actual_day['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
         with col4:
-            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data_actual_day['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
         with col5:
-            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data_actual_day['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
     else:
         st.error("No data available for the forecast.")
+
+    # Calculate forecast for the next 3 days
+    forecast_data_3_days = calculate_3_day_forecast(df, current_datetime)
+
+    # Display forecast for the next 3 days
+    for i in range(3):
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data_3_days['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
+        with col2:
+            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data_3_days['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
+        with col3:
+            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data_3_days['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+        with col4:
+            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data_3_days['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+        with col5:
+            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data_3_days['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+
 
     # Temperature and Humidity Analytics for Today
     st.subheader('Analytics for Today')
