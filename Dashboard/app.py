@@ -6,17 +6,6 @@ import os
 import pytz
 import time
 
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
-
-# Load custom CSS (assuming your CSS file is named "styles.css")
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
-with open(css_file_path) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
 # Function to construct the file path
 def get_file_path(filename):
     """
@@ -28,12 +17,29 @@ def get_file_path(filename):
     Returns:
         str: The absolute path to the data file.
     """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, filename)
 
-# Define the filename
-data_file = "predicted_data_2024.csv"
+# Function to calculate forecasted values for next 3 days
+def calculate_forecast(df):
+    # Get current date
+    current_date = datetime.now(tz).date()
+
+    # Calculate forecast for the next 3 days
+    forecast_data = {}
+    for metric in ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']:
+        forecast_values = []
+        for i in range(3):
+            forecast_date = current_date + timedelta(days=i)
+            # Here you can implement your own logic to predict the values based on historical data
+            # For demonstration purposes, let's assume the forecasted value is the same as the last available value
+            forecast_value = df.loc[df['timestamp'].dt.date == current_date, metric].iloc[-1]
+            forecast_values.append(forecast_value)
+        forecast_data[metric] = forecast_values
+    return forecast_data
 
 # Load dataset
+data_file = "predicted_data_2024.csv"
 df = pd.read_csv(get_file_path(data_file))
 
 # Convert the timestamp column to datetime
@@ -50,13 +56,6 @@ def get_current_time_gmt_plus_1():
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
-# Function to calculate forecasted values for next 3 days
-def calculate_forecast(df, num_days=3):
-    forecast_data = {}
-    for metric in ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']:
-        forecast_data[metric] = df[metric][:num_days]
-    return forecast_data
-
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -72,11 +71,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Lokacioni aktual
+    # Location
     current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Ikona e motit dhe temperatura
+    # Weather icon and temperature
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -85,7 +84,7 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Pikat kryesore të ditës
+    # Today's Highlights
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
@@ -93,7 +92,7 @@ def main():
     col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
     col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-    # Parashikimi për 3 ditët e ardhshme
+    # Forecast for the next 3 days
     st.subheader('3 Days Forecast')
     forecast_data = calculate_forecast(df)
     
@@ -110,24 +109,15 @@ def main():
         with col5:
             st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
-    # Mbyllja e div container
-    st.markdown("""
-    </div>
-    """, unsafe_allow_html=True)
+    # Temperature and Humidity Analytics for Today
+    st.subheader('Temperature Analytics')
+    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
-    # Charts for predicted data
-    st.subheader('Analytics for Predicted Data')
-    fig, axes = plt.subplots(3, 2, figsize=(12, 8))
-
-    metrics = ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']
-    for i, metric in enumerate(metrics):
-        ax = axes[i // 2, i % 2]
-        ax.plot(df_today['timestamp'], df_today[metric])
-        ax.set_title(metric)
-        ax.set_xlabel('Time')
-        ax.set_ylabel(metric)
-
-    plt.tight_layout()
+    fig, ax = plt.subplots(2)
+    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
+    ax[0].set_ylabel('Temperature (°C)')
+    ax[1].set_ylabel('Humidity (%)')
     st.pyplot(fig)
 
 # Run the main function
