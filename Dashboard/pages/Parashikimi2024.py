@@ -1,3 +1,80 @@
+import pandas as pd
+from prophet import Prophet
+
+# Load the dataset
+df = pd.read_csv('cleaned_data.csv')
+
+# Convert timestamp to datetime and handle timezones consistently
+df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_localize(None)
+
+# Ensure correct data types and check for missing values
+df = df.fillna(method='ffill')  # Forward fill missing values
+
+# Specify the columns in the original dataset that you want to predict
+sensors = ['TC', 'HUM', 'PRES', 'US', 'SOIL1']
+
+# Resample data to hourly averages
+df.set_index('timestamp', inplace=True)
+hourly_data = df.resample('H').mean().reset_index()
+
+# Placeholder DataFrame to store 2023 yhat values
+yhat_2023 = pd.DataFrame()
+
+# Iterate through columns for prediction
+for sensor in sensors:
+    # Create DataFrame for current column
+    sensor_data = pd.DataFrame({'ds': hourly_data['timestamp'], 'y': hourly_data[sensor]})
+
+    # Remove outliers using IQR
+    Q1 = sensor_data['y'].quantile(0.25)
+    Q3 = sensor_data['y'].quantile(0.75)
+    IQR = Q3 - Q1
+    sensor_data = sensor_data[(sensor_data['y'] >= (Q1 - 1.5 * IQR)) & (sensor_data['y'] <= (Q3 + 1.5 * IQR))]
+
+    # Print sensor_data for inspection (optional)
+    print(sensor_data.head())
+
+    # Create Prophet model with potential hyperparameter tuning
+    model = Prophet(
+        changepoint_prior_scale=0.05,
+        seasonality_prior_scale=10,
+        yearly_seasonality=True,
+        daily_seasonality=True
+    )
+
+    # Fit the model
+    model.fit(sensor_data)
+
+    # Create future DataFrame for 2023 with consistent timezone handling
+    future_2023 = model.make_future_dataframe(periods=8760 - len(sensor_data), freq='H')  # Ensure we have 8760 hours for a full year
+    future_2023['ds'] = future_2023['ds'].dt.tz_localize(None)  # Remove timezone if needed
+
+    # Make predictions for 2023
+    forecast_2023 = model.predict(future_2023)
+
+    # Extract yhat values for 2023
+    yhat_2023[sensor + '_yhat'] = forecast_2023['yhat'].values
+
+# Create prediction DataFrame with hourly frequency for 2024
+prediction_data = pd.DataFrame(index=pd.date_range('2024-01-01 00:00:00', '2024-12-31 23:00:00', freq='H'))
+prediction_data['timestamp'] = prediction_data.index
+
+# Repeat the 2023 yhat values for 2024
+repeats = int(len(prediction_data) / len(yhat_2023)) + 1
+yhat_2023_repeated = pd.concat([yhat_2023] * repeats, ignore_index=True).iloc[:len(prediction_data)]
+
+# Add the repeated yhat values to the prediction DataFrame
+for sensor in sensors:
+    prediction_data[sensor + '_predicted'] = yhat_2023_repeated[sensor + '_yhat'].values
+
+# Save predictions to CSV
+prediction_data.to_csv('predicted_data_2024.csv', index=False)
+
+# Print the head of the predictions dataset
+print(prediction_data.head())
+
+print('Predictions complete. The result is saved in predicted_data_2024.csv')
+
 import streamlit as st
 import pandas as pd
 import os
