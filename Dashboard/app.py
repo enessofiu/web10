@@ -130,3 +130,5 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
+
+
