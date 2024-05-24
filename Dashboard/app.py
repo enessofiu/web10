@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+from datetime import datetime
 
 # Set page configuration
 st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
@@ -24,21 +25,22 @@ def load_data(file_path):
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     return data
 
-# Cache the function to calculate average values
-@st.cache
-def calculate_averages(data):
-    avg_values = {
-        "TC": data["TC"].mean(),
-        "HUM": data["HUM"].mean(),
-        "PRES": data["PRES"].mean(),
-        "US": data["US"].mean(),
-        "SOIL1": data["SOIL1"].mean()
+# Function to calculate average values for today's date
+def calculate_averages_today(data):
+    today = datetime.now().date()
+    today_data = data[data['timestamp'].dt.date == today]
+    avg_values_today = {
+        "TC": today_data["TC"].mean(),
+        "HUM": today_data["HUM"].mean(),
+        "PRES": today_data["PRES"].mean(),
+        "US": today_data["US"].mean(),
+        "SOIL1": today_data["SOIL1"].mean()
     }
-    return avg_values
+    return avg_values_today
 
 # Load the data
 data = load_data(get_file_path('cleaned_data.csv'))
-avg_values = calculate_averages(data)
+avg_values_today = calculate_averages_today(data)
 
 # Page title
 st.title("Welcome to the Smart Agriculture Dashboard")
@@ -48,40 +50,40 @@ st.markdown(f"""
 <div class="main">
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="temp-card" onclick="navigateTo('/Temperature')">
+            <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                <p>Average: {avg_values["TC"]:.2f}°C</p>
+                <p id="temp-data">Average: {avg_values_today["TC"]:.2f}°C</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="hum-card" onclick="navigateTo('/Humidity')">
+            <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                <p>Average: {avg_values["HUM"]:.2f}%</p>
+                <p id="hum-data">Average: {avg_values_today["HUM"]:.2f}%</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="pres-card" onclick="navigateTo('/Air_Pressure')">
+            <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                <p>Average: {avg_values["PRES"]:.2f} hPa</p>
+                <p id="pres-data">Average: {avg_values_today["PRES"]:.2f} hPa</p>
             </div>
         </div>
     </div>
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="us-card" onclick="navigateTo('/Ultrasound')">
+            <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                <p>Average: {avg_values["US"]:.2f}</p>
+                <p id="us-data">Average: {avg_values_today["US"]:.2f}</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="soil-card" onclick="navigateTo('/Soil_Moisture')">
+            <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                <p>Average: {avg_values["SOIL1"]:.2f}%</p>
+                <p id="soil-data">Average: {avg_values_today["SOIL1"]:.2f}%</p>
             </div>
         </div>
     </div>
@@ -123,10 +125,6 @@ st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow
 # Javascript to handle hover effect and dynamic data
 javascript = """
 <script>
-function navigateTo(url) {
-    window.location.href = url;
-}
-
 document.querySelectorAll('.card').forEach(item => {
     item.addEventListener('mouseover', event => {
         item.style.transform = 'rotateY(180deg)';
