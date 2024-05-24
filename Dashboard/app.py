@@ -50,6 +50,13 @@ def get_current_time_gmt_plus_1():
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
+# Function to calculate forecasted values for next 3 days
+def calculate_forecast(df, num_days=3):
+    forecast_data = {}
+    for metric in ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']:
+        forecast_data[metric] = df[metric][:num_days]
+    return forecast_data
+
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -88,56 +95,41 @@ def main():
 
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
-    days = ['Tuesday', 'Wednesday', 'Thursday']
-    forecast_data = {
-        'Day': days,
-        'TC_predicted': df['TC_predicted'][:3],
-        'HUM_predicted': df['HUM_predicted'][:3],
-        'PRES_predicted': df['PRES_predicted'][:3],
-        'US_predicted': df['US_predicted'][:3],
-        'SOIL1_predicted': df['SOIL1_predicted'][:3]
-    }
-    df_forecast = pd.DataFrame(forecast_data)
+    forecast_data = calculate_forecast(df)
     
-
-    for i in range(len(df_forecast)):
+    for i in range(len(forecast_data['TC_predicted'])):
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
-            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{df_forecast['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
         with col2:
-            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{df_forecast['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
         with col3:
-            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{df_forecast['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
         with col4:
-            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{df_forecast['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
+            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
         with col5:
-            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{df_forecast['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-
-
+            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
     # Mbyllja e div container
     st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-    # Analitika e temperaturës për ditën
-    st.subheader('Temperature Analytics')
-    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
+    # Charts for predicted data
+    st.subheader('Analytics for Predicted Data')
+    fig, axes = plt.subplots(3, 2, figsize=(12, 8))
 
-    fig, ax = plt.subplots(2)
-    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
-    ax[0].set_ylabel('Temperature (°C)')
-    ax[1].set_ylabel('Humidity (%)')
+    metrics = ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']
+    for i, metric in enumerate(metrics):
+        ax = axes[i // 2, i % 2]
+        ax.plot(df_today['timestamp'], df_today[metric])
+        ax.set_title(metric)
+        ax.set_xlabel('Time')
+        ax.set_ylabel(metric)
+
+    plt.tight_layout()
     st.pyplot(fig)
-
-
 
 # Run the main function
 if __name__ == '__main__':
     main()
-
-# Automatically refresh the page every second to update the time display
-while True:
-    time.sleep(1)
-    st.experimental_rerun()
