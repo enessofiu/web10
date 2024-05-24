@@ -84,17 +84,9 @@ def main():
     st.subheader('3 Days Forecast')
     forecast_days = [(current_datetime + timedelta(days=i)).strftime('%A') for i in range(1, 4)]
 
-    # Organize forecast days in rows
-    col1, col2, col3 = st.columns(3)
-    for i, day in enumerate(forecast_days):
-        if i % 3 == 0:
-            col = col1
-        elif i % 3 == 1:
-            col = col2
-        else:
-            col = col3
-        
-        with col:
+    # Organize forecast days in divs
+    for day in forecast_days:
+        with st.beta_container():
             st.subheader(day)
             st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
             st.metric("Humidity", f"{current_data['HUM_predicted']}%")
