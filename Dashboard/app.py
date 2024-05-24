@@ -84,10 +84,10 @@ def main():
     # Today's Highlights
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Precipitation", f"{current_data['SOIL1_predicted']}%")  # Using soil data as precipitation
+    col1.metric("Soil", f"{current_data['SOIL1_predicted']}%")  # Using soil data as precipitation
     col2.metric("Humidity", f"{current_data['HUM_predicted']}%")
     col3.metric("Wind", f"{current_data['PRES_predicted']} km/h")  # Using pres data as wind
-    col4.metric("Sunrise & Sunset", f"{current_data['US_predicted']}", f"{current_data['US_predicted']}")  # Using US data for both
+    col4.metric("Ultrasound", f"{current_data['US_predicted']}")  # Using US data for both
 
     # 3 Days Forecast
     st.subheader('3 Days Forecast')
