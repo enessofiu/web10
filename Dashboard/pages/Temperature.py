@@ -30,8 +30,6 @@ def load_data(file_path):
         pandas.DataFrame: The loaded data as a pandas DataFrame.
     """
     data = pd.read_csv(file_path)
-    # Add any necessary data processing steps here (e.g., handling missing values)
-    # ...
     return data
 
 
@@ -62,29 +60,56 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 temp_data = data[['timestamp', 'TC']]
 
 # Page title
-st.title("Temperature (TC) Visualizations")
+st.markdown("<div class='header'>Temperature (TC) Visualizations</div>", unsafe_allow_html=True)
 
-# Line Chart
-st.markdown("<div class='card'><h3>Temperature Over Time</h3></div>", unsafe_allow_html=True)
-st.line_chart(temp_data.set_index('timestamp')['TC'])
+# Page title
+st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
-# Bar Chart
-st.markdown("<div class='card'><h3>Temperature Distribution</h3></div>", unsafe_allow_html=True)
-st.bar_chart(temp_data.set_index('timestamp')['TC'])
+# Initialize or get the session state to track the current chart type
+if 'current_chart' not in st.session_state:
+    st.session_state.current_chart = 'line'
 
-# Pie Chart
-st.markdown("<div class='card'><h3>Temperature Proportions</h3></div>", unsafe_allow_html=True)
-temp_bins = pd.cut(temp_data['TC'], bins=5)
-temp_pie_data = temp_bins.value_counts().reset_index()
-temp_pie_data.columns = ['Temperature Range', 'Count']  # Rename columns
-fig, ax = plt.subplots()
-ax.pie(temp_pie_data['Count'], labels=temp_pie_data['Temperature Range'], autopct='%1.1f%%')
-st.pyplot(fig)
+# Arrange buttons in a single row
+col1, col2, col3, col4 = st.columns(4)
 
-# Scatter Plot
-st.markdown("<div class='card'><h3>Temperature Scatter Plot</h3></div>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-sns.scatterplot(x='timestamp', y='TC', data=temp_data, ax=ax)
-st.pyplot(fig)
+# Button to show Line Chart
+if col1.button("Show Line Chart"):
+    st.session_state.current_chart = 'line'
+
+# Button to show Bar Chart
+if col2.button("Show Bar Chart"):
+    st.session_state.current_chart = 'bar'
+
+# Button to show Pie Chart
+if col3.button("Show Pie Chart"):
+    st.session_state.current_chart = 'pie'
+
+# Button to show Scatter Plot
+if col4.button("Show Scatter Plot"):
+    st.session_state.current_chart = 'scatter'
+
+# Display the corresponding chart based on the current chart type
+if st.session_state.current_chart == 'line':
+    st.markdown("<div class='card'><h3>Temperature Over Time</h3></div>", unsafe_allow_html=True)
+    st.line_chart(temp_data.set_index('timestamp')['TC'],color='#365341')
+
+elif st.session_state.current_chart == 'bar':
+    st.markdown("<div class='card'><h3>Temperature Distribution</h3></div>", unsafe_allow_html=True)
+    st.bar_chart(temp_data.set_index('timestamp')['TC'],color='#365341')
+
+elif st.session_state.current_chart == 'pie':
+    st.markdown("<div class='card'><h3>Temperature Proportions</h3></div>", unsafe_allow_html=True)
+    temp_bins = pd.cut(temp_data['TC'], bins=5)
+    temp_pie_data = temp_bins.value_counts().reset_index()
+    temp_pie_data.columns = ['Temperature Range', 'Count']
+    fig, ax = plt.subplots()
+    ax.pie(temp_pie_data['Count'], labels=temp_pie_data['Temperature Range'], autopct='%1.1f%%')
+    st.pyplot(fig)
+
+elif st.session_state.current_chart == 'scatter':
+    st.markdown("<div class='card'><h3>Temperature Scatter Plot</h3></div>", unsafe_allow_html=True)
+    fig, ax = plt.subplots()
+    sns.scatterplot(x='timestamp', y='TC', data=temp_data, ax=ax)
+    st.pyplot(fig)
 
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
