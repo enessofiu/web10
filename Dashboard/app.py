@@ -4,15 +4,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
 import pytz
-import time
-
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
-
-# Load custom CSS (assuming your CSS file is named "styles.css")
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
-with open(css_file_path) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Function to construct the file path
 def get_file_path(filename):
