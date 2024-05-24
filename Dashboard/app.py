@@ -45,8 +45,11 @@ avg_values_today = calculate_averages_today(data)
 # Predicted data for 2024 (example data)
 predicted_data = pd.read_csv(get_file_path('predicted_data_2024.csv'))
 
-# Get today's predicted averages
-today_predicted_data = predicted_data[predicted_data['timestamp'] == str(datetime.now().date())].iloc[0]
+# Get today's predicted averages if available
+today_predicted_data = None
+today_date_str = str(datetime.now().date())
+if today_date_str in predicted_data['timestamp'].values:
+    today_predicted_data = predicted_data[predicted_data['timestamp'] == today_date_str].iloc[0]
 
 # Page title
 st.title("Welcome to the Smart Agriculture Dashboard")
@@ -59,21 +62,21 @@ st.markdown(f"""
             <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                <p id="temp-data">Average: {today_predicted_data["Temperature"]:.2f}°C</p>
+                <p id="temp-data">Average: {today_predicted_data["TC"]:.2f}°C</p>
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                <p id="hum-data">Average: {today_predicted_data["Humidity"]:.2f}%</p>
+                <p id="hum-data">Average: {today_predicted_data["HUM"]:.2f}%</p>
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                <p id="pres-data">Average: {today_predicted_data["Air Pressure"]:.2f} hPa</p>
+                <p id="pres-data">Average: {today_predicted_data["PRES"]:.2f} hPa</p>
             </div>
         </div>
     </div>
@@ -82,14 +85,14 @@ st.markdown(f"""
             <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                <p id="us-data">Average: {today_predicted_data["Ultrasound"]:.2f}</p>
+                <p id="us-data">Average: {today_predicted_data["US"]:.2f}</p>
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                <p id="soil-data">Average: {today_predicted_data["Soil Moisture"]:.2f}%</p>
+                <p id="soil-data">Average: {today_predicted_data["SOIL1"]:.2f}%</p>
             </div>
         </div>
     </div>
