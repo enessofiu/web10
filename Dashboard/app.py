@@ -50,21 +50,21 @@ st.markdown(f"""
 <div class="main">
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="temp-card" onmouseover="showTodayValues('temp')">
+            <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
                 <p id="temp-data">Average: {avg_values_today["TC"]:.2f}°C</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="hum-card" onmouseover="showTodayValues('hum')">
+            <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
                 <p id="hum-data">Average: {avg_values_today["HUM"]:.2f}%</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="pres-card" onmouseover="showTodayValues('pres')">
+            <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
                 <p id="pres-data">Average: {avg_values_today["PRES"]:.2f} hPa</p>
@@ -73,14 +73,14 @@ st.markdown(f"""
     </div>
     <div class="card-row">
         <div class="card-column">
-            <div class="card" id="us-card" onmouseover="showTodayValues('us')">
+            <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
                 <p id="us-data">Average: {avg_values_today["US"]:.2f}</p>
             </div>
         </div>
         <div class="card-column">
-            <div class="card" id="soil-card" onmouseover="showTodayValues('soil')">
+            <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
                 <p id="soil-data">Average: {avg_values_today["SOIL1"]:.2f}%</p>
@@ -125,31 +125,13 @@ st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow
 # Javascript to handle hover effect and dynamic data
 javascript = """
 <script>
-function showTodayValues(sensor) {
-    const todayValues = {
-        "TC": 25.3, // Example temperature value for today
-        "HUM": 65.7, // Example humidity value for today
-        "PRES": 1013.2, // Example air pressure value for today
-        "US": 10.5, // Example ultrasound value for today
-        "SOIL1": 45.8 // Example soil moisture value for today
-    };
-
-    const card = document.getElementById(sensor + '-card');
-    const dataElement = document.getElementById(sensor + '-data');
-    if (card.classList.contains('rotated')) {
-        dataElement.innerText = "Average: " + todayValues[sensor];
-    } else {
-        dataElement.innerText = "Average: " + todayValues[sensor] + " (Today)";
-    }
-}
-
 document.querySelectorAll('.card').forEach(item => {
     item.addEventListener('mouseover', event => {
-        item.classList.add('rotated');
+        item.style.transform = 'rotateY(180deg)';
     });
 
     item.addEventListener('mouseleave', event => {
-        item.classList.remove('rotated');
+        item.style.transform = 'rotateY(0deg)';
     });
 });
 
