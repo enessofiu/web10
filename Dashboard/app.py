@@ -6,6 +6,14 @@ import os
 import pytz
 import time
 
+# Titulli i aplikacionit
+st.title('Weather Dashboard')
+
+# Load custom CSS (assuming your CSS file is named "styles.css")
+css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
+with open(css_file_path) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
 # Function to construct the file path
 def get_file_path(filename):
     """
@@ -20,26 +28,10 @@ def get_file_path(filename):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, filename)
 
-# Function to calculate forecasted values for next 3 days
-def calculate_forecast(df):
-    # Get current date
-    current_date = datetime.now(tz).date()
-
-    # Calculate forecast for the next 3 days
-    forecast_data = {}
-    for metric in ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']:
-        forecast_values = []
-        for i in range(3):
-            forecast_date = current_date + timedelta(days=i)
-            # Here you can implement your own logic to predict the values based on historical data
-            # For demonstration purposes, let's assume the forecasted value is the same as the last available value
-            forecast_value = df.loc[df['timestamp'].dt.date == current_date, metric].iloc[-1]
-            forecast_values.append(forecast_value)
-        forecast_data[metric] = forecast_values
-    return forecast_data
+# Define the filename
+data_file = "predicted_data_2024.csv"
 
 # Load dataset
-data_file = "predicted_data_2024.csv"
 df = pd.read_csv(get_file_path(data_file))
 
 # Convert the timestamp column to datetime
@@ -56,6 +48,18 @@ def get_current_time_gmt_plus_1():
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
+# Function to calculate 3-day forecast
+def calculate_forecast(df):
+    current_datetime = get_current_time_gmt_plus_1()
+    forecast_data = {
+        'TC_predicted': df['TC_predicted'][:3],
+        'HUM_predicted': df['HUM_predicted'][:3],
+        'PRES_predicted': df['PRES_predicted'][:3],
+        'US_predicted': df['US_predicted'][:3],
+        'SOIL1_predicted': df['SOIL1_predicted'][:3]
+    }
+    return forecast_data
+
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -71,11 +75,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Location
+    # Lokacioni aktual
     current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Weather icon and temperature
+    # Ikona e motit dhe temperatura
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -84,7 +88,7 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Today's Highlights
+    # Pikat kryesore të ditës
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
@@ -92,10 +96,10 @@ def main():
     col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
     col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-    # Forecast for the next 3 days
+    # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
     forecast_data = calculate_forecast(df)
-    
+
     for i in range(len(forecast_data['TC_predicted'])):
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
@@ -109,50 +113,54 @@ def main():
         with col5:
             st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
 
-# Temperature and Humidity Analytics for Today
-st.subheader('Analytics for Today')
+    # Temperature and Humidity Analytics for Today
+    st.subheader('Analytics for Today')
 
-# Resample the data for visualization
-df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()
+    # Resample the data for visualization
+    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()
 
-# Create subplots
-fig, ax = plt.subplots(3, 2, figsize=(10, 10))
+    # Create subplots
+    fig, ax = plt.subplots(3, 2, figsize=(10, 10))
 
-# Plot temperature
-ax[0, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-ax[0, 0].set_ylabel('Temperature (°C)')
-ax[0, 0].set_title('Temperature')
+    # Plot temperature
+    ax[0, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+    ax[0, 0].set_ylabel('Temperature (°C)')
+    ax[0, 0].set_title('Temperature')
 
-# Plot humidity
-ax[0, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
-ax[0, 1].set_ylabel('Humidity (%)')
-ax[0, 1].set_title('Humidity')
+    # Plot humidity
+    ax[0, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
+    ax[0, 1].set_ylabel('Humidity (%)')
+    ax[0, 1].set_title('Humidity')
 
-# Plot pressure
-ax[1, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['PRES_predicted'], marker='o')
-ax[1, 0].set_ylabel('Pressure')
-ax[1, 0].set_title('Pressure')
+    # Plot pressure
+    ax[1, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['PRES_predicted'], marker='o')
+    ax[1, 0].set_ylabel('Pressure')
+    ax[1, 0].set_title('Pressure')
 
-# Plot US
-ax[1, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['US_predicted'], marker='o')
-ax[1, 1].set_ylabel('US')
-ax[1, 1].set_title('US')
+    # Plot US
+    ax[1, 1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['US_predicted'], marker='o')
+    ax[1, 1].set_ylabel('US')
+    ax[1, 1].set_title('US')
 
-# Plot Soil
-ax[2, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['SOIL1_predicted'], marker='o')
-ax[2, 0].set_ylabel('Soil')
-ax[2, 0].set_title('Soil')
+    # Plot Soil
+    ax[2, 0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['SOIL1_predicted'], marker='o')
+    ax[2, 0].set_ylabel('Soil')
+    ax[2, 0].set_title('Soil')
 
-# Hide the empty subplot
-ax[2, 1].axis('off')
+    # Hide the empty subplot
+    ax[2, 1].axis('off')
 
-# Adjust layout
-plt.tight_layout()
+    # Adjust layout
+    plt.tight_layout()
 
-# Show the plots
-st.pyplot(fig)
-
+    # Show the plots
+    st.pyplot(fig)
 
 # Run the main function
 if __name__ == '__main__':
     main()
+
+# Automatically refresh the page every second to update the time display
+while True:
+    time.sleep(1)
+    st.experimental_rerun()
