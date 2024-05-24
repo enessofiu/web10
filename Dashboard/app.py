@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
 import pytz
-import time
 
 # Function to construct the file path
 def get_file_path(filename):
@@ -58,12 +57,6 @@ def calculate_3_day_forecast(df, current_datetime):
             forecast_data['PRES_predicted'].append(df_next_day.iloc[-1]['PRES_predicted'])
             forecast_data['US_predicted'].append(df_next_day.iloc[-1]['US_predicted'])
             forecast_data['SOIL1_predicted'].append(df_next_day.iloc[-1]['SOIL1_predicted'])
-        else:
-            forecast_data['TC_predicted'].append(None)
-            forecast_data['HUM_predicted'].append(None)
-            forecast_data['PRES_predicted'].append(None)
-            forecast_data['US_predicted'].append(None)
-            forecast_data['SOIL1_predicted'].append(None)
     return forecast_data
 
 # Main dashboard function
@@ -71,27 +64,47 @@ def main():
     # Get current datetime in GMT+1
     current_datetime = get_current_time_gmt_plus_1()
 
-    # Parashikimi për 3 ditët e ardhshme
+    # Filter data for the current date
+    df_today = get_today_data(df, current_datetime)
+
+    # Extract the latest data point for current conditions
+    if not df_today.empty:
+        current_data = df_today.iloc[-1]
+    else:
+        st.error("No data available for today.")
+        return
+
+    # Location
+    current_location = 'Prizren, Kosovë'
+    st.subheader(f'Current Location: {current_location}')
+
+    # Weather icon and temperature
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
+    with col2:
+        st.markdown(f"### {current_data['TC_predicted']:.2f}°C")
+        st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
+
+    # Today's Highlights
+    st.subheader("Today's Highlights")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
+    col2.metric("Humidity", f"{current_data['HUM_predicted']}%")
+    col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
+    col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
+
+    # 3 Days Forecast
     st.subheader('3 Days Forecast')
-
-    # Calculate forecast for the next 3 days
-    forecast_data_3_days = calculate_3_day_forecast(df, current_datetime)
-
-    # Display forecast for the next 3 days
-    days = [current_datetime + timedelta(days=i+1) for i in range(3)]
-    for i in range(3):
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1:
-            st.write(f"<div class='metric-container'><h4>{days[i].strftime('%A')}</h4><div class='metric-value'>{forecast_data_3_days['TC_predicted'][i]:.2f}°C</div></div>", unsafe_allow_html=True)
-        with col2:
-            st.write(f"<div class='metric-container'><h4>{days[i].strftime('%A')}</h4><div class='metric-value'>{forecast_data_3_days['HUM_predicted'][i]:.2f}%</div></div>", unsafe_allow_html=True)
-        with col3:
-            st.write(f"<div class='metric-container'><h4>{days[i].strftime('%A')}</h4><div class='metric-value'>{forecast_data_3_days['PRES_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-        with col4:
-            st.write(f"<div class='metric-container'><h4>{days[i].strftime('%A')}</h4><div class='metric-value'>{forecast_data_3_days['US_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-        with col5:
-            st.write(f"<div class='metric-container'><h4>{days[i].strftime('%A')}</h4><div class='metric-value'>{forecast_data_3_days['SOIL1_predicted'][i]:.2f}</div></div>", unsafe_allow_html=True)
-
+    forecast_data = calculate_3_day_forecast(df, current_datetime)
+    days = [(current_datetime + timedelta(days=i+1)).strftime('%A') for i in range(3)]
+    for day, temp, hum, pres, us, soil in zip(days, forecast_data['TC_predicted'], forecast_data['HUM_predicted'], forecast_data['PRES_predicted'], forecast_data['US_predicted'], forecast_data['SOIL1_predicted']):
+        st.write(f"**{day}:**")
+        st.write(f"- Temperature: {temp:.2f}°C")
+        st.write(f"- Humidity: {hum:.2f}%")
+        st.write(f"- Pressure: {pres:.2f}")
+        st.write(f"- US: {us:.2f}")
+        st.write(f"- Soil: {soil:.2f}")
 
     # Temperature and Humidity Analytics for Today
     st.subheader('Analytics for Today')
