@@ -4,7 +4,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-
 def get_file_path(filename):
     """
     Constructs the absolute path to the data file.
@@ -65,28 +64,36 @@ soil_data = data[['timestamp', 'SOIL1']]
 # Page title
 st.title("Soil Moisture (SOIL1) Visualizations")
 
-# Line Chart
-st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
-st.line_chart(soil_data.set_index('timestamp')['SOIL1'])
+# Check if it's the first time the page is loaded
+first_time_open = st.session_state.get('first_time_open', True)
 
-# Bar Chart
-st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
-st.bar_chart(soil_data.set_index('timestamp')['SOIL1'])
+# Line Chart (displayed only on the first page load)
+if first_time_open:
+    st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
+    st.line_chart(soil_data.set_index('timestamp')['SOIL1'])
+    st.session_state['first_time_open'] = False
 
-# Pie Chart
-st.markdown("<div class='card'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
-soil_bins = pd.cut(soil_data['SOIL1'], bins=5)
-soil_pie_data = soil_bins.value_counts().reset_index()
-soil_pie_data.columns = ['Soil Moisture Range', 'Count'] 
-# Rename columns
-fig, ax = plt.subplots()
-ax.pie(soil_pie_data['Count'], labels=soil_pie_data['Soil Moisture Range'], autopct='%1.1f%%')
-st.pyplot(fig)
+# Button to show Bar Chart
+if st.button("Show Soil Moisture Distribution"):
+    st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
+    st.bar_chart(soil_data.set_index('timestamp')['SOIL1'])
 
-# Scatter Plot
-st.markdown("<div class='card'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-sns.scatterplot(x='timestamp', y='SOIL1', data=soil_data, ax=ax)
-st.pyplot(fig)
+# Button to show Pie Chart
+if st.button("Show Soil Moisture Proportions"):
+    st.markdown("<div class='card'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
+    soil_bins = pd.cut(soil_data['SOIL1'], bins=5)
+    soil_pie_data = soil_bins.value_counts().reset_index()
+    soil_pie_data.columns = ['Soil Moisture Range', 'Count'] 
+    # Rename columns
+    fig, ax = plt.subplots()
+    ax.pie(soil_pie_data['Count'], labels=soil_pie_data['Soil Moisture Range'], autopct='%1.1f%%')
+    st.pyplot(fig)
+
+# Button to show Scatter Plot
+if st.button("Show Soil Moisture Scatter Plot"):
+    st.markdown("<div class='card'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
+    fig, ax = plt.subplots()
+    sns.scatterplot(x='timestamp', y='SOIL1', data=soil_data, ax=ax)
+    st.pyplot(fig)
 
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
