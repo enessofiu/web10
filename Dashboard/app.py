@@ -51,8 +51,17 @@ today_date_str = str(datetime.now().date())
 if today_date_str in predicted_data['timestamp'].values:
     today_predicted_data = predicted_data[predicted_data['timestamp'] == today_date_str].iloc[0]
 
-# Page title
-st.title("Welcome to the Smart Agriculture Dashboard")
+# Calculate average values for today's date
+if today_predicted_data is not None:
+    avg_values_today = {
+        "TC": today_predicted_data["TC_predicted"],
+        "HUM": today_predicted_data["HUM_predicted"],
+        "PRES": today_predicted_data["PRES_predicted"],
+        "US": today_predicted_data["US_predicted"],
+        "SOIL1": today_predicted_data["SOIL1_predicted"]
+    }
+else:
+    avg_values_today = None
 
 # Main content with average values
 st.markdown(f"""
@@ -62,21 +71,21 @@ st.markdown(f"""
             <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                {f"<p id='temp-data'>Average: {today_predicted_data['TC']:.2f}°C</p>" if today_predicted_data is not None and not pd.isna(today_predicted_data['TC']) else "<p id='temp-data'>No data available</p>"}
+                {f"<p id='temp-data'>Average: {avg_values_today['TC']:.2f}°C</p>" if avg_values_today is not None else "<p id='temp-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                {f"<p id='hum-data'>Average: {today_predicted_data['HUM']:.2f}%</p>" if today_predicted_data is not None and not pd.isna(today_predicted_data['HUM']) else "<p id='hum-data'>No data available</p>"}
+                {f"<p id='hum-data'>Average: {avg_values_today['HUM']:.2f}%</p>" if avg_values_today is not None else "<p id='hum-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                {f"<p id='pres-data'>Average: {today_predicted_data['PRES']:.2f} hPa</p>" if today_predicted_data is not None and not pd.isna(today_predicted_data['PRES']) else "<p id='pres-data'>No data available</p>"}
+                {f"<p id='pres-data'>Average: {avg_values_today['PRES']:.2f} hPa</p>" if avg_values_today is not None else "<p id='pres-data'>No data available</p>"}
             </div>
         </div>
     </div>
@@ -85,14 +94,14 @@ st.markdown(f"""
             <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                {f"<p id='us-data'>Average: {today_predicted_data['US']:.2f}</p>" if today_predicted_data is not None and not pd.isna(today_predicted_data['US']) else "<p id='us-data'>No data available</p>"}
+                {f"<p id='us-data'>Average: {avg_values_today['US']:.2f}</p>" if avg_values_today is not None else "<p id='us-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                {f"<p id='soil-data'>Average: {today_predicted_data['SOIL1']:.2f}%</p>" if today_predicted_data is not None and not pd.isna(today_predicted_data['SOIL1']) else "<p id='soil-data'>No data available</p>"}
+                {f"<p id='soil-data'>Average: {avg_values_today['SOIL1']:.2f}%</p>" if avg_values_today is not None else "<p id='soil-data'>No data available</p>"}
             </div>
         </div>
     </div>
