@@ -39,28 +39,19 @@ def get_current_time_gmt_plus_1():
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
-# Function to calculate forecast for the next three days
-# Function to calculate forecast for the next three days
-def calculate_three_days_forecast(df_today):
-    forecast_data = []
-    current_date = df_today.iloc[-1]['timestamp'].date()
-    for i in range(3):
-        # Filter data for the current date
-        df_current_day = df_today[df_today['timestamp'].dt.date == current_date]
-        if not df_current_day.empty:
-            forecast_data.append({
-                'TC_predicted': df_current_day.iloc[-1]['TC_predicted'],
-                'HUM_predicted': df_current_day.iloc[-1]['HUM_predicted'],
-                'PRES_predicted': df_current_day.iloc[-1]['PRES_predicted'],
-                'US_predicted': df_current_day.iloc[-1]['US_predicted'],
-                'SOIL1_predicted': df_current_day.iloc[-1]['SOIL1_predicted']
-            })
-        else:
-            forecast_data.append({})
-        # Move to the next day
-        current_date += timedelta(days=1)
+# Function to calculate forecast for the actual day
+def calculate_actual_day_forecast(df_today):
+    if not df_today.empty:
+        forecast_data = {
+            'TC_predicted': df_today.iloc[-1]['TC_predicted'],
+            'HUM_predicted': df_today.iloc[-1]['HUM_predicted'],
+            'PRES_predicted': df_today.iloc[-1]['PRES_predicted'],
+            'US_predicted': df_today.iloc[-1]['US_predicted'],
+            'SOIL1_predicted': df_today.iloc[-1]['SOIL1_predicted']
+        }
+    else:
+        forecast_data = {}
     return forecast_data
-
 
 # Main dashboard function
 def main():
@@ -100,24 +91,19 @@ def main():
 
     # 3 Days Forecast
     st.subheader('3 Days Forecast')
-    forecast_data = calculate_three_days_forecast(df_today)
+    forecast_data = calculate_actual_day_forecast(df_today)
     if forecast_data:
-        for day, data in enumerate(forecast_data, 1):
-            st.write(f"### Day {day}")
-            if data:
-                col1, col2, col3, col4, col5 = st.columns(5)
-                with col1:
-                    st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{data['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
-                with col2:
-                    st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{data['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
-                with col3:
-                    st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{data['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
-                with col4:
-                    st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{data['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
-                with col5:
-                    st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{data['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
-            else:
-                st.error("No data available for the forecast.")
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
+        with col2:
+            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
+        with col3:
+            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+        with col4:
+            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+        with col5:
+            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
     else:
         st.error("No data available for the forecast.")
 
