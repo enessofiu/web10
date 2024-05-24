@@ -102,14 +102,6 @@ def main():
         col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
         col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
 
-    # Footer
-    st.sidebar.header('Menu')
-    st.sidebar.button('Home')
-    st.sidebar.button('Forecast')
-    st.sidebar.button('Locations')
-    st.sidebar.button('Analytics')
-    st.sidebar.button('Calendar')
-    st.sidebar.button('Settings')
 
     # Automatically refresh the page every second to update the time display
     time.sleep(1)
