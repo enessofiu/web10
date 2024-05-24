@@ -102,15 +102,23 @@ def main():
         col4.metric("US", f"{df_forecast['US_predicted'][i]:.2f}")
         col5.metric("Soil", f"{df_forecast['SOIL1_predicted'][i]:.2f}")
 
-    # Analitika e temperaturës për ditën
-    st.subheader('Temperature Analytics')
-    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
+    # Plot for each metric
+    st.subheader('Analytics')
 
-    fig, ax = plt.subplots(2)
-    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
-    ax[0].set_ylabel('Temperature (°C)')
-    ax[1].set_ylabel('Humidity (%)')
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+
+    metrics = ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']
+
+    for i, metric in enumerate(metrics):
+        row = i // 3
+        col = i % 3
+        ax = axes[row, col]
+        ax.plot(df_today['timestamp'], df_today[metric])
+        ax.set_title(metric)
+        ax.set_xlabel('Time')
+        ax.set_ylabel(metric)
+
+    plt.tight_layout()
     st.pyplot(fig)
 
     # Footer
