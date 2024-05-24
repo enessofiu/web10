@@ -86,7 +86,7 @@ def main():
 
     # Organize forecast days in divs
     for day in forecast_days:
-        with st.beta_container():
+        with st.container():
             st.subheader(day)
             st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
             st.metric("Humidity", f"{current_data['HUM_predicted']}%")
