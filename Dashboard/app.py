@@ -83,9 +83,10 @@ def main():
 
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
-    forecast_days = [(current_datetime + timedelta(days=i)).strftime('%A') for i in range(1, 4)]
-
-    # Organize forecast days in separate rows
+    
+    # Extract forecast days from the dataset
+    forecast_days = df['timestamp'].dt.strftime('%A').unique()[:3]
+    
     for day in forecast_days:
         st.subheader(day)
         st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
@@ -108,10 +109,6 @@ def main():
 
     plt.tight_layout()
     st.pyplot(fig)
-
-    # Automatically refresh the page every second to update the time display
-    time.sleep(1)
-    st.experimental_rerun()
 
 # Run the main function
 if __name__ == '__main__':
