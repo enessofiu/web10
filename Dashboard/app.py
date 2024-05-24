@@ -60,6 +60,17 @@ def calculate_forecast(df):
     }
     return forecast_data
 
+# Function to calculate forecast for the actual day
+def calculate_actual_day_forecast(df_today):
+    forecast_data = {
+        'TC_predicted': df_today['TC_predicted'],
+        'HUM_predicted': df_today['HUM_predicted'],
+        'PRES_predicted': df_today['PRES_predicted'],
+        'US_predicted': df_today['US_predicted'],
+        'SOIL1_predicted': df_today['SOIL1_predicted']
+    }
+    return forecast_data
+
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -99,7 +110,6 @@ def main():
     # Parashikimi për 3 ditët e ardhshme
     st.subheader('3 Days Forecast')
     forecast_data = calculate_forecast(df)
-
     for i in range(len(forecast_data['TC_predicted'])):
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
@@ -159,8 +169,3 @@ def main():
 # Run the main function
 if __name__ == '__main__':
     main()
-
-# Automatically refresh the page every second to update the time display
-while True:
-    time.sleep(1)
-    st.experimental_rerun()
