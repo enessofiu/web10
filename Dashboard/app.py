@@ -39,33 +39,22 @@ def get_current_time_gmt_plus_1():
 def get_today_data(df, current_datetime):
     return df[df['timestamp'].dt.date == current_datetime.date()]
 
-# Function to calculate forecast for the actual day
-def calculate_actual_day_forecast(df_today):
-    if not df_today.empty:
-        forecast_data = {
-            'TC_predicted': df_today.iloc[-1]['TC_predicted'],
-            'HUM_predicted': df_today.iloc[-1]['HUM_predicted'],
-            'PRES_predicted': df_today.iloc[-1]['PRES_predicted'],
-            'US_predicted': df_today.iloc[-1]['US_predicted'],
-            'SOIL1_predicted': df_today.iloc[-1]['SOIL1_predicted']
-        }
-    else:
-        forecast_data = {}
-    return forecast_data
-
-# Function to calculate 3-day forecast
-def calculate_3_days_forecast(df):
+# Function to calculate forecast for the next three days
+def calculate_three_days_forecast(df_today):
     forecast_data = []
     for i in range(3):
-        forecast_day = (df.iloc[-1 - i]['timestamp'] + timedelta(days=i)).strftime('%A')
-        forecast_data.append({
-            'day': forecast_day,
-            'TC_predicted': df.iloc[-1 - i]['TC_predicted'],
-            'HUM_predicted': df.iloc[-1 - i]['HUM_predicted'],
-            'PRES_predicted': df.iloc[-1 - i]['PRES_predicted'],
-            'US_predicted': df.iloc[-1 - i]['US_predicted'],
-            'SOIL1_predicted': df.iloc[-1 - i]['SOIL1_predicted']
-        })
+        if not df_today.empty:
+            forecast_data.append({
+                'TC_predicted': df_today.iloc[-1]['TC_predicted'],
+                'HUM_predicted': df_today.iloc[-1]['HUM_predicted'],
+                'PRES_predicted': df_today.iloc[-1]['PRES_predicted'],
+                'US_predicted': df_today.iloc[-1]['US_predicted'],
+                'SOIL1_predicted': df_today.iloc[-1]['SOIL1_predicted']
+            })
+        else:
+            forecast_data.append({})
+        # Increment the date for the next day
+        df_today = df_today[df_today['timestamp'].dt.date == (df_today.iloc[-1]['timestamp'].date() + timedelta(days=1))]
     return forecast_data
 
 # Main dashboard function
@@ -106,15 +95,24 @@ def main():
 
     # 3 Days Forecast
     st.subheader('3 Days Forecast')
-    forecast_data = calculate_3_days_forecast(df)
+    forecast_data = calculate_three_days_forecast(df_today)
     if forecast_data:
-        for day_forecast in forecast_data:
-            st.write(f"## {day_forecast['day']}")
-            st.write(f"### Temperature: {day_forecast['TC_predicted']:.2f}°C")
-            st.write(f"### Humidity: {day_forecast['HUM_predicted']:.2f}%")
-            st.write(f"### Pressure: {day_forecast['PRES_predicted']:.2f}")
-            st.write(f"### US: {day_forecast['US_predicted']:.2f}")
-            st.write(f"### Soil: {day_forecast['SOIL1_predicted']:.2f}")
+        for day, data in enumerate(forecast_data, 1):
+            st.write(f"### Day {day}")
+            if data:
+                col1, col2, col3, col4, col5 = st.columns(5)
+                with col1:
+                    st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{data['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
+                with col2:
+                    st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{data['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
+                with col3:
+                    st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{data['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+                with col4:
+                    st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{data['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+                with col5:
+                    st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{data['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+            else:
+                st.error("No data available for the forecast.")
     else:
         st.error("No data available for the forecast.")
 
