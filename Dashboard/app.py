@@ -1,10 +1,25 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Titulli i aplikacionit
 st.title('Weather Dashboard')
+
+# Load dataset
+df = pd.read_csv('cleaned_data.csv')
+
+# Convert the timestamp column to datetime
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+# Get current datetime
+current_datetime = datetime.now()
+
+# Filter data for the current date
+df_today = df[df['timestamp'].dt.date == current_datetime.date()]
+
+# Extract the latest data point for current conditions
+current_data = df_today.iloc[-1]
 
 # Lokacioni aktual
 current_location = 'Los Angeles, CA, USA'
@@ -15,19 +30,19 @@ col1, col2 = st.columns([3, 1])
 with col1:
     st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
 with col2:
-    st.markdown('### 12°C')
-    st.markdown('#### Monday, 07:43 AM')
+    st.markdown(f"### {current_data['TC']}°C")
+    st.markdown(f"#### {current_datetime.strftime('%A, %I:%M %p')}")
     st.markdown('##### Partly Cloudy')
 
 # Pikat kryesore të ditës
 st.subheader("Today's Highlights")
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Precipitation", "2%")
-col2.metric("Humidity", "87%")
-col3.metric("Wind", "0 km/h")
-col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")
+col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
+col2.metric("Humidity", f"{current_data['HUM']}%")
+col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
+col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
 
-# Grafikët e shansit për shi
+# Grafikët e shansit për shi (Using dummy data as no rain data in the dataset)
 st.subheader('Chance of Rain')
 hours = ['09 AM', '12 PM', '03 PM', '06 PM', '09 PM', '12 AM', '03 AM']
 chance_of_rain = [10, 20, 30, 50, 40, 20, 10]
@@ -38,7 +53,7 @@ ax.set_xlabel('Chance of Rain (%)')
 ax.set_ylabel('Time')
 st.pyplot(fig)
 
-# Parashikimi për 3 ditët e ardhshme
+# Parashikimi për 3 ditët e ardhshme (Using dummy data as no forecast data in the dataset)
 st.subheader('3 Days Forecast')
 forecast = {
     'Day': ['Tuesday', 'Wednesday', 'Thursday'],
@@ -56,11 +71,10 @@ for i in range(len(df_forecast)):
 
 # Analitika e temperaturës për ditën
 st.subheader('Temperature Analytics')
-hours = ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM', '12 AM', '3 AM']
-temperatures = [12, 14, 18, 22, 20, 16, 12, 10]
+df_today = df_today.set_index('timestamp').resample('3H').mean()  # Resample every 3 hours and compute mean
 
 fig, ax = plt.subplots()
-ax.plot(hours, temperatures, marker='o')
+ax.plot(df_today.index.strftime('%I %p'), df_today['TC'], marker='o')
 ax.set_xlabel('Time')
 ax.set_ylabel('Temperature (°C)')
 st.pyplot(fig)
