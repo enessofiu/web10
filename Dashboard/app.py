@@ -68,11 +68,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Lokacioni aktual
+    # Location
     current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Ikona e motit dhe temperatura
+    # Weather icon and temperature
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -81,15 +81,15 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Pikat kryesore të ditës
+    # Today's Highlights
     st.subheader("Today's Highlights")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Precipitation", "2%")  # Assuming constant, as no precipitation data in the dataset
+    col1.metric("Precipitation", f"{current_data['SOIL1_predicted']}%")  # Using soil data as precipitation
     col2.metric("Humidity", f"{current_data['HUM_predicted']}%")
-    col3.metric("Wind", "0 km/h")  # Assuming constant, as no wind data in the dataset
-    col4.metric("Sunrise & Sunset", "6:18 AM", "7:27 PM")  # Assuming constant times
+    col3.metric("Wind", f"{current_data['PRES_predicted']} km/h")  # Using pres data as wind
+    col4.metric("Sunrise & Sunset", f"{current_data['US_predicted']}", f"{current_data['US_predicted']}")  # Using US data for both
 
-    # Parashikimi për 3 ditët e ardhshme
+    # 3 Days Forecast
     st.subheader('3 Days Forecast')
     forecast_data = calculate_actual_day_forecast(df_today)
     if forecast_data:
