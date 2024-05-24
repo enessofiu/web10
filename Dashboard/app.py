@@ -62,21 +62,21 @@ st.markdown(f"""
             <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                <p id="temp-data">Average: {today_predicted_data["TC"]:.2f}°C</p>
+                {f"<p id='temp-data'>Average: {today_predicted_data['TC']:.2f}°C</p>" if today_predicted_data is not None else "<p id='temp-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                <p id="hum-data">Average: {today_predicted_data["HUM"]:.2f}%</p>
+                {f"<p id='hum-data'>Average: {today_predicted_data['HUM']:.2f}%</p>" if today_predicted_data is not None else "<p id='hum-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                <p id="pres-data">Average: {today_predicted_data["PRES"]:.2f} hPa</p>
+                {f"<p id='pres-data'>Average: {today_predicted_data['PRES']:.2f} hPa</p>" if today_predicted_data is not None else "<p id='pres-data'>No data available</p>"}
             </div>
         </div>
     </div>
@@ -85,19 +85,20 @@ st.markdown(f"""
             <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                <p id="us-data">Average: {today_predicted_data["US"]:.2f}</p>
+                {f"<p id='us-data'>Average: {today_predicted_data['US']:.2f}</p>" if today_predicted_data is not None else "<p id='us-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                <p id="soil-data">Average: {today_predicted_data["SOIL1"]:.2f}%</p>
+                {f"<p id='soil-data'>Average: {today_predicted_data['SOIL1']:.2f}%</p>" if today_predicted_data is not None else "<p id='soil-data'>No data available</p>"}
             </div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # Visualization section title
 st.header("Parameter Visualizations")
