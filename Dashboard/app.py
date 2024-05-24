@@ -53,6 +53,21 @@ def calculate_actual_day_forecast(df_today):
         forecast_data = {}
     return forecast_data
 
+# Function to calculate 3-day forecast
+def calculate_3_days_forecast(df):
+    forecast_data = []
+    for i in range(3):
+        forecast_day = (df.iloc[-1 - i]['timestamp'] + timedelta(days=i)).strftime('%A')
+        forecast_data.append({
+            'day': forecast_day,
+            'TC_predicted': df.iloc[-1 - i]['TC_predicted'],
+            'HUM_predicted': df.iloc[-1 - i]['HUM_predicted'],
+            'PRES_predicted': df.iloc[-1 - i]['PRES_predicted'],
+            'US_predicted': df.iloc[-1 - i]['US_predicted'],
+            'SOIL1_predicted': df.iloc[-1 - i]['SOIL1_predicted']
+        })
+    return forecast_data
+
 # Main dashboard function
 def main():
     # Get current datetime in GMT+1
@@ -91,19 +106,15 @@ def main():
 
     # 3 Days Forecast
     st.subheader('3 Days Forecast')
-    forecast_data = calculate_actual_day_forecast(df_today)
+    forecast_data = calculate_3_days_forecast(df)
     if forecast_data:
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1:
-            st.write(f"<div class='metric-container'><h4>Temperature</h4><div class='metric-value'>{forecast_data['TC_predicted']:.2f}°C</div></div>", unsafe_allow_html=True)
-        with col2:
-            st.write(f"<div class='metric-container'><h4>Humidity</h4><div class='metric-value'>{forecast_data['HUM_predicted']:.2f}%</div></div>", unsafe_allow_html=True)
-        with col3:
-            st.write(f"<div class='metric-container'><h4>Pressure</h4><div class='metric-value'>{forecast_data['PRES_predicted']:.2f}</div></div>", unsafe_allow_html=True)
-        with col4:
-            st.write(f"<div class='metric-container'><h4>US</h4><div class='metric-value'>{forecast_data['US_predicted']:.2f}</div></div>", unsafe_allow_html=True)
-        with col5:
-            st.write(f"<div class='metric-container'><h4>Soil</h4><div class='metric-value'>{forecast_data['SOIL1_predicted']:.2f}</div></div>", unsafe_allow_html=True)
+        for day_forecast in forecast_data:
+            st.write(f"## {day_forecast['day']}")
+            st.write(f"### Temperature: {day_forecast['TC_predicted']:.2f}°C")
+            st.write(f"### Humidity: {day_forecast['HUM_predicted']:.2f}%")
+            st.write(f"### Pressure: {day_forecast['PRES_predicted']:.2f}")
+            st.write(f"### US: {day_forecast['US_predicted']:.2f}")
+            st.write(f"### Soil: {day_forecast['SOIL1_predicted']:.2f}")
     else:
         st.error("No data available for the forecast.")
 
@@ -153,4 +164,3 @@ def main():
 # Run the main function
 if __name__ == '__main__':
     main()
-
