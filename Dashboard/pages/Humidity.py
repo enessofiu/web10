@@ -56,28 +56,35 @@ if os.path.exists(data_path):
     # Page title
     st.title("Humidity (HUM) Visualizations")
 
-    # Line Chart
-    st.markdown("<div class='card'><h3>Humidity Over Time</h3></div>", unsafe_allow_html=True)
-    st.line_chart(hum_data.set_index('timestamp')['HUM'])
+    # Arrange buttons in a single row
+    col1, col2, col3, col4 = st.columns(4)
 
-    # Bar Chart
-    st.markdown("<div class='card'><h3>Humidity Distribution</h3></div>", unsafe_allow_html=True)
-    st.bar_chart(hum_data.set_index('timestamp')['HUM'])
+    # Button to show Line Chart
+    if col1.button("Show Humidity Over Time"):
+        st.markdown("<div class='card'><h3>Humidity Over Time</h3></div>", unsafe_allow_html=True)
+        st.line_chart(hum_data.set_index('timestamp')['HUM'])
 
-    # Pie Chart
-    st.markdown("<div class='card'><h3>Humidity Proportions</h3></div>", unsafe_allow_html=True)
-    hum_bins = pd.cut(hum_data['HUM'], bins=5)
-    hum_pie_data = hum_bins.value_counts().reset_index()
-    hum_pie_data.columns = ['Humidity Range', 'Count']  # Rename columns
-    fig, ax = plt.subplots()
-    ax.pie(hum_pie_data['Count'], labels=hum_pie_data['Humidity Range'], autopct='%1.1f%%')
-    st.pyplot(fig)
+    # Button to show Bar Chart
+    if col2.button("Show Humidity Distribution"):
+        st.markdown("<div class='card'><h3>Humidity Distribution</h3></div>", unsafe_allow_html=True)
+        st.bar_chart(hum_data.set_index('timestamp')['HUM'])
 
-    # Scatter Plot
-    st.markdown("<div class='card'><h3>Humidity Scatter Plot</h3></div>", unsafe_allow_html=True)
-    fig, ax = plt.subplots()
-    sns.scatterplot(x='timestamp', y='HUM', data=hum_data, ax=ax)
-    st.pyplot(fig)
+    # Button to show Pie Chart
+    if col3.button("Show Humidity Proportions"):
+        st.markdown("<div class='card'><h3>Humidity Proportions</h3></div>", unsafe_allow_html=True)
+        hum_bins = pd.cut(hum_data['HUM'], bins=5)
+        hum_pie_data = hum_bins.value_counts().reset_index()
+        hum_pie_data.columns = ['Humidity Range', 'Count']  # Rename columns
+        fig, ax = plt.subplots()
+        ax.pie(hum_pie_data['Count'], labels=hum_pie_data['Humidity Range'], autopct='%1.1f%%')
+        st.pyplot(fig)
+
+    # Button to show Scatter Plot
+    if col4.button("Show Humidity Scatter Plot"):
+        st.markdown("<div class='card'><h3>Humidity Scatter Plot</h3></div>", unsafe_allow_html=True)
+        fig, ax = plt.subplots()
+        sns.scatterplot(x='timestamp', y='HUM', data=hum_data, ax=ax)
+        st.pyplot(fig)
 
     st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
 else:
