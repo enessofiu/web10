@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import os
 
 # Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(os.path.abspath(_file_))
+
+# Load custom CSS
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+with open(css_file_path) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Function to construct the file path
 def get_file_path(filename):
@@ -51,24 +56,44 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 # Filter for Air Pressure (PRES)
 pres_data = data[['timestamp', 'PRES']]
 
-# Page title
-st.title("Air Pressure (PRES) Visualizations")
+st.markdown("<div class='header'>Air Pressure (PRES) Visualizations</div>", unsafe_allow_html=True)
 
-# Arrange buttons in a single row
-col1, col2, col3, col4 = st.columns(4)
+# Page title
+st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+
+
+# Initialize variable to track current chart type
+current_chart = 'line'
+
+# Button layout in a horizontal manner
+button_col1, button_col2, button_col3, button_col4 = st.columns(4)
 
 # Button to show Line Chart
-if col1.button("Show Air Pressure Over Time"):
-    st.markdown("<div class='card'><h3>Air Pressure Over Time</h3></div>", unsafe_allow_html=True)
-    st.line_chart(pres_data.set_index('timestamp')['PRES'])
+if button_col1.button("Show Air Pressure Over Time"):
+    current_chart = 'line'
 
 # Button to show Bar Chart
-if col2.button("Show Air Pressure Distribution"):
-    st.markdown("<div class='card'><h3>Air Pressure Distribution</h3></div>", unsafe_allow_html=True)
-    st.bar_chart(pres_data.set_index('timestamp')['PRES'])
+if button_col2.button("Show Air Pressure Distribution"):
+    current_chart = 'bar'
 
 # Button to show Pie Chart
-if col3.button("Show Air Pressure Proportions"):
+if button_col3.button("Show Air Pressure Proportions"):
+    current_chart = 'pie'
+
+# Button to show Scatter Plot
+if button_col4.button("Show Air Pressure Scatter Plot"):
+    current_chart = 'scatter'
+
+# Display corresponding chart based on the current chart type
+if current_chart == 'line':
+    st.markdown("<div class='card'><h3>Air Pressure Over Time</h3></div>", unsafe_allow_html=True)
+    st.line_chart(pres_data.set_index('timestamp')['PRES'],color='#365341')
+
+elif current_chart == 'bar':
+    st.markdown("<div class='card'><h3>Air Pressure Distribution</h3></div>", unsafe_allow_html=True)
+    st.bar_chart(pres_data.set_index('timestamp')['PRES'],color='#365341')
+
+elif current_chart == 'pie':
     st.markdown("<div class='card'><h3>Air Pressure Proportions</h3></div>", unsafe_allow_html=True)
     pres_bins = pd.cut(pres_data['PRES'], bins=5)
     pres_pie_data = pres_bins.value_counts().reset_index()
@@ -77,8 +102,7 @@ if col3.button("Show Air Pressure Proportions"):
     ax.pie(pres_pie_data['Count'], labels=pres_pie_data['Air Pressure Range'], autopct='%1.1f%%')
     st.pyplot(fig)
 
-# Button to show Scatter Plot
-if col4.button("Show Air Pressure Scatter Plot"):
+elif current_chart == 'scatter':
     st.markdown("<div class='card'><h3>Air Pressure Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='PRES', data=pres_data, ax=ax)
