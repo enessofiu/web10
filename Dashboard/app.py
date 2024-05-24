@@ -44,16 +44,19 @@ avg_values_today = calculate_averages_today(data)
 
 # Predicted data for 2024 (example data)
 predicted_data = pd.read_csv(get_file_path('predicted_data_2024.csv'))
+print("Predicted data:")
+print(predicted_data.head())  # Print the first few rows of predicted data for debugging
 
 # Get today's predicted averages if available
 today_predicted_data = None
 today_date_str = str(datetime.now().date())
+print("Today's date:", today_date_str)  # Debugging: print today's date
 if today_date_str in predicted_data['timestamp'].values:
     today_predicted_data = predicted_data[predicted_data['timestamp'] == today_date_str].iloc[0]
 
 # Calculate average values for today's date
 if today_predicted_data is not None:
-    avg_values_today = {
+    avg_values_today_predicted = {
         "TC": today_predicted_data["TC_predicted"],
         "HUM": today_predicted_data["HUM_predicted"],
         "PRES": today_predicted_data["PRES_predicted"],
@@ -61,7 +64,10 @@ if today_predicted_data is not None:
         "SOIL1": today_predicted_data["SOIL1_predicted"]
     }
 else:
-    avg_values_today = None
+    avg_values_today_predicted = None
+
+# Page title
+st.title("Welcome to the Smart Agriculture Dashboard")
 
 # Main content with average values
 st.markdown(f"""
@@ -71,21 +77,21 @@ st.markdown(f"""
             <div class="card" id="temp-card">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
-                {f"<p id='temp-data'>Average: {avg_values_today['TC']:.2f}°C</p>" if avg_values_today is not None else "<p id='temp-data'>No data available</p>"}
+                {f"<p id='temp-data'>Average: {avg_values_today_predicted['TC']:.2f}°C</p>" if avg_values_today_predicted is not None else "<p id='temp-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="hum-card">
                 <div class="icon">💧</div>
                 <h2>Humidity</h2>
-                {f"<p id='hum-data'>Average: {avg_values_today['HUM']:.2f}%</p>" if avg_values_today is not None else "<p id='hum-data'>No data available</p>"}
+                {f"<p id='hum-data'>Average: {avg_values_today_predicted['HUM']:.2f}%</p>" if avg_values_today_predicted is not None else "<p id='hum-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="pres-card">
                 <div class="icon">🌬️</div>
                 <h2>Air Pressure</h2>
-                {f"<p id='pres-data'>Average: {avg_values_today['PRES']:.2f} hPa</p>" if avg_values_today is not None else "<p id='pres-data'>No data available</p>"}
+                {f"<p id='pres-data'>Average: {avg_values_today_predicted['PRES']:.2f} hPa</p>" if avg_values_today_predicted is not None else "<p id='pres-data'>No data available</p>"}
             </div>
         </div>
     </div>
@@ -94,20 +100,19 @@ st.markdown(f"""
             <div class="card" id="us-card">
                 <div class="icon">📡</div>
                 <h2>Ultrasound</h2>
-                {f"<p id='us-data'>Average: {avg_values_today['US']:.2f}</p>" if avg_values_today is not None else "<p id='us-data'>No data available</p>"}
+                {f"<p id='us-data'>Average: {avg_values_today_predicted['US']:.2f}</p>" if avg_values_today_predicted is not None else "<p id='us-data'>No data available</p>"}
             </div>
         </div>
         <div class="card-column">
             <div class="card" id="soil-card">
                 <div class="icon">🌱</div>
                 <h2>Soil Moisture</h2>
-                {f"<p id='soil-data'>Average: {avg_values_today['SOIL1']:.2f}%</p>" if avg_values_today is not None else "<p id='soil-data'>No data available</p>"}
+                {f"<p id='soil-data'>Average: {avg_values_today_predicted['SOIL1']:.2f}%</p>" if avg_values_today_predicted is not None else "<p id='soil-data'>No data available</p>"}
             </div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
-
 
 # Visualization section title
 st.header("Parameter Visualizations")
