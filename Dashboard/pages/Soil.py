@@ -64,22 +64,20 @@ soil_data = data[['timestamp', 'SOIL1']]
 # Page title
 st.title("Soil Moisture (SOIL1) Visualizations")
 
-# Check if it's the first time the page is loaded
-first_time_open = st.session_state.get('first_time_open', True)
-
 # Line Chart (displayed only on the first page load)
-if first_time_open:
-    st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
-    st.line_chart(soil_data.set_index('timestamp')['SOIL1'])
-    st.session_state['first_time_open'] = False
+st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
+st.line_chart(soil_data.set_index('timestamp')['SOIL1'])
+
+# Arrange buttons in a single row
+col1, col2, col3, col4 = st.columns(4)
 
 # Button to show Bar Chart
-if st.button("Show Soil Moisture Distribution"):
+if col1.button("Show Soil Moisture Distribution"):
     st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(soil_data.set_index('timestamp')['SOIL1'])
 
 # Button to show Pie Chart
-if st.button("Show Soil Moisture Proportions"):
+if col2.button("Show Soil Moisture Proportions"):
     st.markdown("<div class='card'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
     soil_bins = pd.cut(soil_data['SOIL1'], bins=5)
     soil_pie_data = soil_bins.value_counts().reset_index()
@@ -90,7 +88,7 @@ if st.button("Show Soil Moisture Proportions"):
     st.pyplot(fig)
 
 # Button to show Scatter Plot
-if st.button("Show Soil Moisture Scatter Plot"):
+if col3.button("Show Soil Moisture Scatter Plot"):
     st.markdown("<div class='card'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='SOIL1', data=soil_data, ax=ax)
