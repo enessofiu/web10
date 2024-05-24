@@ -62,29 +62,56 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 us_data = data[['timestamp', 'US']]
 
 # Page title
-st.title("Ultrasound (US) Visualizations")
+st.markdown("<div class='header'>Ultrasound (US) Visualizations</div>", unsafe_allow_html=True)
 
-# Line Chart
-st.markdown("<div class='card'><h3>Ultrasound Over Time</h3></div>", unsafe_allow_html=True)
-st.line_chart(us_data.set_index('timestamp')['US'])
+# Page title
+st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
-# Bar Chart
-st.markdown("<div class='card'><h3>Ultrasound Distribution</h3></div>", unsafe_allow_html=True)
-st.bar_chart(us_data.set_index('timestamp')['US'])
+# Initialize or get the session state to track the current chart type
+if 'current_chart' not in st.session_state:
+    st.session_state.current_chart = 'line'
 
-# Pie Chart
-st.markdown("<div class='card'><h3>Ultrasound Proportions</h3></div>", unsafe_allow_html=True)
-us_bins = pd.cut(us_data['US'], bins=5)
-us_pie_data = us_bins.value_counts().reset_index()
-us_pie_data.columns = ['Ultrasound Range', 'Count']  # Rename columns
-fig, ax = plt.subplots()
-ax.pie(us_pie_data['Count'], labels=us_pie_data['Ultrasound Range'], autopct='%1.1f%%')
-st.pyplot(fig)
+# Arrange buttons in a single row
+col1, col2, col3, col4 = st.columns(4)
 
-# Scatter Plot
-st.markdown("<div class='card'><h3>Ultrasound Scatter Plot</h3></div>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-sns.scatterplot(x='timestamp', y='US', data=us_data, ax=ax)
-st.pyplot(fig)
+# Button to show Line Chart
+if col1.button("Show Line Chart"):
+    st.session_state.current_chart = 'line'
+
+# Button to show Bar Chart
+if col2.button("Show Bar Chart"):
+    st.session_state.current_chart = 'bar'
+
+# Button to show Pie Chart
+if col3.button("Show Pie Chart"):
+    st.session_state.current_chart = 'pie'
+
+# Button to show Scatter Plot
+if col4.button("Show Scatter Plot"):
+    st.session_state.current_chart = 'scatter'
+
+# Display the corresponding chart based on the current chart type
+if st.session_state.current_chart == 'line':
+    st.markdown("<div class='card'><h3>Ultrasound Over Time</h3></div>", unsafe_allow_html=True)
+    st.line_chart(us_data.set_index('timestamp')['US'],color='#365341')
+
+elif st.session_state.current_chart == 'bar':
+    st.markdown("<div class='card'><h3>Ultrasound Distribution</h3></div>", unsafe_allow_html=True)
+    st.bar_chart(us_data.set_index('timestamp')['US'],color='#365341')
+
+elif st.session_state.current_chart == 'pie':
+    st.markdown("<div class='card'><h3>Ultrasound Proportions</h3></div>", unsafe_allow_html=True)
+    us_bins = pd.cut(us_data['US'], bins=5)
+    us_pie_data = us_bins.value_counts().reset_index()
+    us_pie_data.columns = ['Ultrasound Range', 'Count']
+    fig, ax = plt.subplots()
+    ax.pie(us_pie_data['Count'], labels=us_pie_data['Ultrasound Range'], autopct='%1.1f%%')
+    st.pyplot(fig)
+
+elif st.session_state.current_chart == 'scatter':
+    st.markdown("<div class='card'><h3>Ultrasound Scatter Plot</h3></div>", unsafe_allow_html=True)
+    fig, ax = plt.subplots()
+    sns.scatterplot(x='timestamp', y='US', data=us_data, ax=ax)
+    st.pyplot(fig)
 
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
