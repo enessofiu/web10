@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
 import pytz
@@ -84,16 +85,29 @@ def main():
     st.subheader('3 Days Forecast')
     forecast_days = [(current_datetime + timedelta(days=i)).strftime('%A') for i in range(1, 4)]
 
-    # Organize forecast days in rows and columns
-    col1, col2, col3 = st.columns(3)
-    for i, day in enumerate(forecast_days):
-        with col1 if i % 3 == 0 else col2 if i % 3 == 1 else col3:
-            st.subheader(day)
-            st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
-            st.metric("Humidity", f"{current_data['HUM_predicted']}%")
-            st.metric("Pressure", f"{current_data['PRES_predicted']:.2f}")
-            st.metric("US", f"{current_data['US_predicted']:.2f}")
-            st.metric("Soil", f"{current_data['SOIL1_predicted']:.2f}")
+    # Organize forecast days in separate rows
+    for day in forecast_days:
+        st.subheader(day)
+        st.metric("Temperature", f"{current_data['TC_predicted']:.2f}°C")
+        st.metric("Humidity", f"{current_data['HUM_predicted']}%")
+        st.metric("Pressure", f"{current_data['PRES_predicted']:.2f}")
+        st.metric("US", f"{current_data['US_predicted']:.2f}")
+        st.metric("Soil", f"{current_data['SOIL1_predicted']:.2f}")
+
+    # Charts for predicted data
+    st.subheader('Temperature and Humidity Analytics')
+    fig, axes = plt.subplots(3, 2, figsize=(10, 10))
+
+    metrics = ['TC_predicted', 'HUM_predicted', 'PRES_predicted', 'US_predicted', 'SOIL1_predicted']
+    for i, metric in enumerate(metrics):
+        ax = axes[i // 2, i % 2]
+        ax.plot(df_today['timestamp'], df_today[metric])
+        ax.set_title(metric)
+        ax.set_xlabel('Time')
+        ax.set_ylabel(metric)
+
+    plt.tight_layout()
+    st.pyplot(fig)
 
     # Automatically refresh the page every second to update the time display
     time.sleep(1)
