@@ -2,19 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 
-
-
-
-
 # Set page configuration
 st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
-
-
-
-# Load custom CSS
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
-with open(css_file_path) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Get the absolute path to the current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -24,15 +13,14 @@ def get_file_path(filename):
     return os.path.join(current_dir, filename)
 
 # Cache the data loading function
-@st.cache_data
+@st.cache
 def load_data(file_path):
     data = pd.read_csv(file_path)
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     return data
 
-
 # Cache the function to calculate average values
-@st.cache_data
+@st.cache
 def calculate_averages(data):
     avg_values = {
         "TC": data["TC"].mean(),
@@ -43,8 +31,6 @@ def calculate_averages(data):
     }
     return avg_values
 
-
-
 # Load the data
 data = load_data(get_file_path('cleaned_data.csv'))
 avg_values = calculate_averages(data)
@@ -52,52 +38,59 @@ avg_values = calculate_averages(data)
 # Page title
 st.title("Welcome to the Smart Agriculture Dashboard")
 
+# Navbar
+nav_pages = ["Dashboard", "Temperature", "Humidity", "Air Pressure", "Ultrasound", "Soil Moisture"]
+selected_page = st.sidebar.radio("Navigate to", nav_pages)
 
-
-# Main content with average values
-st.markdown(f"""
-<div class="main">
-    <div class="card-row">
-        <div class="card-column">
-            <div class="card" onclick="navigateTo('/Temperature')">
-                <div class="icon">☀️</div>
-                <h2>Temperature</h2>
-                <p>Average: {avg_values["TC"]:.2f}°C</p>
+# Main content based on selected page
+if selected_page == "Dashboard":
+    # Main content with average values
+    st.markdown(f"""
+    <div class="main">
+        <div class="card-row">
+            <div class="card-column">
+                <div class="card">
+                    <div class="icon">☀️</div>
+                    <h2>Temperature</h2>
+                    <p>Average: {avg_values["TC"]:.2f}°C</p>
+                </div>
+            </div>
+            <div class="card-column">
+                <div class="card">
+                    <div class="icon">💧</div>
+                    <h2>Humidity</h2>
+                    <p>Average: {avg_values["HUM"]:.2f}%</p>
+                </div>
+            </div>
+            <div class="card-column">
+                <div class="card">
+                    <div class="icon">🌬️</div>
+                    <h2>Air Pressure</h2>
+                    <p>Average: {avg_values["PRES"]:.2f} hPa</p>
+                </div>
             </div>
         </div>
-        <div class="card-column">
-            <div class="card" onclick="navigateTo('/Humidity')">
-                <div class="icon">💧</div>
-                <h2>Humidity</h2>
-                <p>Average: {avg_values["HUM"]:.2f}%</p>
+        <div class="card-row">
+            <div class="card-column">
+                <div class="card">
+                    <div class="icon">📡</div>
+                    <h2>Ultrasound</h2>
+                    <p>Average: {avg_values["US"]:.2f}</p>
+                </div>
             </div>
-        </div>
-        <div class="card-column">
-            <div class="card" onclick="navigateTo('/Air_Pressure')">
-                <div class="icon">🌬️</div>
-                <h2>Air Pressure</h2>
-                <p>Average: {avg_values["PRES"]:.2f} hPa</p>
+            <div class="card-column">
+                <div class="card">
+                    <div class="icon">🌱</div>
+                    <h2>Soil Moisture</h2>
+                    <p>Average: {avg_values["SOIL1"]:.2f}%</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="card-row">
-        <div class="card-column">
-            <div class="card" onclick="navigateTo('/Ultrasound')">
-                <div class="icon">📡</div>
-                <h2>Ultrasound</h2>
-                <p>Average: {avg_values["US"]:.2f}</p>
-            </div>
-        </div>
-        <div class="card-column">
-            <div class="card" onclick="navigateTo('/Soil_Moisture')">
-                <div class="icon">🌱</div>
-                <h2>Soil Moisture</h2>
-                <p>Average: {avg_values["SOIL1"]:.2f}%</p>
-            </div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+else:
+    # Other pages
+    st.write(f"Displaying {selected_page} page")
 
 # Visualization section title
 st.header("Parameter Visualizations")
@@ -130,5 +123,3 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
-
-
