@@ -90,11 +90,11 @@ if button_col4.button("Show Air Pressure Scatter Plot"):
 
 # Display corresponding chart based on the current chart type
 if current_chart == 'line':
-    st.markdown("<div class='card'><h3>Air Pressure Over Time</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Air Pressure Over Time</h3></div>", unsafe_allow_html=True)
     st.line_chart(pres_data.set_index('timestamp')['PRES'],color='#365341')
 
 elif current_chart == 'bar':
-    st.markdown("<div class='card'><h3>Air Pressure Distribution</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Air Pressure Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(pres_data.set_index('timestamp')['PRES'],color='#365341')
 
 elif current_chart == 'pie':
@@ -107,7 +107,7 @@ elif current_chart == 'pie':
     st.pyplot(fig)
 
 elif current_chart == 'scatter':
-    st.markdown("<div class='card'><h3>Air Pressure Scatter Plot</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Air Pressure Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='PRES', data=pres_data, ax=ax)
     st.pyplot(fig)
