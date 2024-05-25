@@ -3,6 +3,9 @@ import pandas as pd
 import os
 from prophet import Prophet
 
+# Set page configuration to wide mode
+st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
+
 # Function to retrieve the data path
 def get_data_path():
     """
