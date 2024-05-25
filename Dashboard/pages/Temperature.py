@@ -63,7 +63,7 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 temp_data = data[['timestamp', 'TC']]
 
 # Page title
-st.markdown("<div class='header'>Temperature (TC) Visualizations</div>", unsafe_allow_html=True)
+st.title("Temperature (TC) Visualizations")
 
 # Page title
 st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
