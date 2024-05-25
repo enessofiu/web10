@@ -60,7 +60,6 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 # Filter for Air Pressure (PRES)
 pres_data = data[['timestamp', 'PRES']]
 
-st.title("Welcome to the Smart Agriculture Dashboard")
 
 st.title("Air Pressure (PRES) Visualizations")
 
