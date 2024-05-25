@@ -7,8 +7,6 @@ import pytz
 
 
 
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
 
 # Load custom CSS
 css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
@@ -204,54 +202,7 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Today's Highlights
-    st.markdown(
-        f"""
-        <style>
-            .highlight-box {{
-                background-color: #3498db;
-                padding: 10px;
-                border-radius: 5px;
-                margin: 10px;
-            }}
-            .highlight-box h3, .highlight-box h4, .highlight-box p {{
-                color: white;
-                margin: 5px;
-            }}
-            .highlight-box .highlight-item {{
-                flex: 1;
-                padding: 5px;
-            }}
-            @media only screen and (max-width: 600px) {{
-                .highlight-box {{
-                    padding: 5px;
-                }}
-            }}
-        </style>
-        <div class="highlight-box">
-            <h3>Today's Highlights</h3>
-            <div style="display:flex; flex-wrap: wrap;">
-                <div class="highlight-item">
-                    <h4>Soil</h4>
-                    <p>{current_data['SOIL1_predicted']:.2f}%</p>
-                </div>
-                <div class="highlight-item">
-                    <h4>Humidity</h4>
-                    <p>{current_data['HUM_predicted']:.2f}%</p>
-                </div>
-                <div class="highlight-item">
-                    <h4>Pressure</h4>
-                    <p>{current_data['PRES_predicted']:.2f} km/h</p>
-                </div>
-                <div class="highlight-item">
-                    <h4>Ultrasound</h4>
-                    <p>{current_data['US_predicted']:.2f}</p>
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+
 
     # Today's Forecast
     forecast_data_actual_day = calculate_actual_day_forecast(df_today)
