@@ -62,7 +62,7 @@ if os.path.exists(data_path):
     cols = st.columns(5)
 
     # Page title
-    st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
     # Initialize variable to track current chart type
     current_chart = 'line'
@@ -88,15 +88,15 @@ if os.path.exists(data_path):
 
     # Display corresponding chart based on the current chart type
     if current_chart == 'line':
-        st.markdown("<div class='card'><h3>Humidity Over Time</h3></div>", unsafe_allow_html=True)
+        st.markdown("<div class='card1'><h3>Humidity Over Time</h3></div>", unsafe_allow_html=True)
         st.line_chart(hum_data.set_index('timestamp')['HUM'],color='#365341')
 
     elif current_chart == 'bar':
-        st.markdown("<div class='card'><h3>Humidity Distribution</h3></div>", unsafe_allow_html=True)
+        st.markdown("<div class='card1'><h3>Humidity Distribution</h3></div>", unsafe_allow_html=True)
         st.bar_chart(hum_data.set_index('timestamp')['HUM'],color='#365341')
 
     elif current_chart == 'pie':
-        st.markdown("<div class='card'><h3>Humidity Proportions</h3></div>", unsafe_allow_html=True)
+        st.markdown("<div class='card1'><h3>Humidity Proportions</h3></div>", unsafe_allow_html=True)
         hum_bins = pd.cut(hum_data['HUM'], bins=5)
         hum_pie_data = hum_bins.value_counts().reset_index()
         hum_pie_data.columns = ['Humidity Range', 'Count']  # Rename columns
@@ -105,7 +105,7 @@ if os.path.exists(data_path):
         st.pyplot(fig)
 
     elif current_chart == 'scatter':
-        st.markdown("<div class='card'><h3>Humidity Scatter Plot</h3></div>", unsafe_allow_html=True)
+        st.markdown("<div class='card1'><h3>Humidity Scatter Plot</h3></div>", unsafe_allow_html=True)
         fig, ax = plt.subplots()
         sns.scatterplot(x='timestamp', y='HUM', data=hum_data, ax=ax)
         st.pyplot(fig)
