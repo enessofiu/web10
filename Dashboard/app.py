@@ -218,7 +218,7 @@ def main():
                 <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:black">Temperature</h4>
-                        <p style="color:black">{forecast_data_actual_day['TC_predicted']:.2f}°C</p>
+                        <p style="color:black">{forecast_data_actual_day['TC_predicted']:.2f}°F</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:black">Humidity</h4>
@@ -264,7 +264,7 @@ def main():
                 <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:cdcdcd">Temperature</h4>
-                        <p style="color:cdcdcd">{forecast_data_day['TC_predicted']:.2f}°C</p>
+                        <p style="color:cdcdcd">{forecast_data_day['TC_predicted']:.2f}°F</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:cdcdcd">Humidity</h4>
