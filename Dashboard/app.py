@@ -100,7 +100,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Load custom CSS (assuming your CSS file is named "styles.css")
-css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
