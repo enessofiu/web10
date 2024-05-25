@@ -9,13 +9,13 @@ import pytz
 st.set_page_config(page_title="Weather and Agriculture Dashboard", layout="wide")
 
 # Load custom CSS
-css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Function to construct the file path
 def get_file_path(filename):
-    current_dir = os.path.dirname(os.path.abspath(_file_))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, filename)
 
 # Cache the data loading function
@@ -282,5 +282,5 @@ def main():
         st.subheader("Average Values")
         st.write(avg_values)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
