@@ -1,12 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
 import os
-import pytz
 
-# Set page configuration
-st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
 
 # Load custom CSS (assuming your CSS file is named "styles.css")
 css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
@@ -27,38 +22,20 @@ def get_file_path(filename):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, filename)
 
-# Cache the data loading function
-@st.cache_data
-def load_data(file_path):
-    data = pd.read_csv(file_path)
-    data['timestamp'] = pd.to_datetime(data['timestamp'])
-    return data
-
-# Cache the function to calculate average values
-@st.cache_data
-def calculate_averages(data):
-    avg_values = {
-        "TC": data["TC_predicted"].mean(),
-        "HUM": data["HUM_predicted"].mean(),
-        "PRES": data["PRES_predicted"].mean(),
-        "US": data["US_predicted"].mean(),
-        "SOIL1": data["SOIL1_predicted"].mean()
-    }
-    return avg_values
-
-# Define the filename for the data
+# Define the filename
 data_file = "predicted_data_2024.csv"
 
-# Load the data
-data = load_data(get_file_path(data_file))
-avg_values = calculate_averages(data)
+# Load dataset
+df = pd.read_csv(get_file_path(data_file))
 
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
+# Convert the timestamp column to datetime
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+# Set timezone to GMT+1
+tz = pytz.timezone('Europe/Belgrade')  # Prizren is in the same timezone as Belgrade
 
 # Function to get the current time in GMT+1
 def get_current_time_gmt_plus_1():
-    tz = pytz.timezone('Europe/Belgrade')  # Prizren is in the same timezone as Belgrade
     return datetime.now(tz)
 
 # Filter data for the current date
@@ -110,7 +87,7 @@ def main():
     current_datetime = get_current_time_gmt_plus_1()
 
     # Filter data for the current date
-    df_today = get_today_data(data, current_datetime)
+    df_today = get_today_data(df, current_datetime)
 
     # Extract the latest data point for current conditions
     if not df_today.empty:
@@ -169,7 +146,7 @@ def main():
                 </div>
                 <div class="highlight-item">
                     <h4>Pressure</h4>
-                    <p>{current_data['PRES_predicted']:.2f} hPa</p>
+                    <p>{current_data['PRES_predicted']:.2f} km/h</p>
                 </div>
                 <div class="highlight-item">
                     <h4>Ultrasound</h4>
@@ -219,7 +196,7 @@ def main():
         st.error("No data available for the forecast.")
 
     # Calculate the 3-day forecast
-    forecast_data_3_days = calculate_3_day_forecast(data, current_datetime)
+    forecast_data_3_days = calculate_3_day_forecast(df, current_datetime)
 
     # Display forecast for the next 3 days
     st.subheader('3 Days Forecast')
@@ -231,67 +208,199 @@ def main():
             'US_predicted': forecast_data_3_days['US_predicted'][i],
             'SOIL1_predicted': forecast_data_3_days['SOIL1_predicted'][i]
         }
-        day_name = (current_datetime + timedelta(days=i+1)).strftime('%A')
-        if forecast_data_day['TC_predicted'] is not None:
-            st.markdown(
-                f"""
-                <div style="background-color:#3498db;padding:10px;border-radius:5px">
-                    <h3 style="color:white">{day_name}</h3>
-                    <div style="display:flex; flex-wrap: wrap;">
-                        <div style="flex:1;padding:10px;">
-                            <h4 style="color:white">Temperature</h4>
-                            <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
-                        </div>
-                        <div style="flex:1;padding:10px;">
-                            <h4 style="color:white">Humidity</h4>
-                            <p style="color:white">{forecast_data_day['HUM_predicted']:.2f}%</p>
-                        </div>
-                        <div style="flex:1;padding:10px;">
-                            <h4 style="color:white">Pressure</h4>
-                            <p style="color:white">{forecast_data_day['PRES_predicted']:.2f}</p>
-                        </div>
-                        <div style="flex:1;padding:10px;">
-                            <h4 style="color:white">US</h4>
-                            <p style="color:white">{forecast_data_day['US_predicted']:.2f}</p>
-                        </div>
-                        <div style="flex:1;padding:10px;">
-                            <h4 style="color:white">Soil</h4>
-                            <p style="color:white">{forecast_data_day['SOIL1_predicted']:.2f}</p>
-                        </div>
+        st.markdown(
+            f"""
+            <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
+                <h3 style="color:white">Day {i+1} Forecast</h3>
+                <div style="display:flex; flex-wrap: wrap;">
+                    <div style="flex:1;padding:10px;">
+                        <h4 style="color:white">Temperature</h4>
+                        <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
+                    </div>
+                    <div style="flex:1;padding:10px;">
+                        <h4 style="color:white">Humidity</h4>
+                        <p style="color:white">{forecast_data_day['HUM_predicted']:.2f}%</p>
+                    </div>
+                    <div style="flex:1;padding:10px;">
+                        <h4 style="color:white">Pressure</h4>
+                        <p style="color:white">{forecast_data_day['PRES_predicted']:.2f}</p>
+                    </div>
+                    <div style="flex:1;padding:10px;">
+                        <h4 style="color:white">US</h4>
+                        <p style="color:white">{forecast_data_day['US_predicted']:.2f}</p>
+                    </div>
+                    <div style="flex:1;padding:10px;">
+                        <h4 style="color:white">Soil</h4>
+                        <p style="color:white">{forecast_data_day['SOIL1_predicted']:.2f}</p>
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            st.error(f"No data available for {day_name}.")
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # Graphs section
-    st.subheader("Graphs")
-    
-    # Plot for Temperature, Humidity, Pressure, Ultrasound, Soil
-    fig, ax = plt.subplots(3, 1, figsize=(10, 15))
-    fig.tight_layout(pad=5.0)
+    # Temperature and Humidity Analytics for Today
+    st.subheader('Analytics for Today')
 
-    ax[0].plot(data["timestamp"], data["TC_predicted"], label="Temperature", color='tab:red')
-    ax[0].set_title("Temperature Over Time")
-    ax[0].set_xlabel("Timestamp")
-    ax[0].set_ylabel("Temperature (°C)")
-    ax[0].legend()
+    # Resample the data for visualization
+    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()
 
-    ax[1].plot(data["timestamp"], data["HUM_predicted"], label="Humidity", color='tab:blue')
-    ax[1].set_title("Humidity Over Time")
-    ax[1].set_xlabel("Timestamp")
-    ax[1].set_ylabel("Humidity (%)")
-    ax[1].legend()
+    # Show the plots for temperature, humidity, pressure, US, and Soil vertically
+    fig, ax = plt.subplots(5, 1, figsize=(10, 15))
 
-    ax[2].plot(data["timestamp"], data["PRES_predicted"], label="Pressure", color='tab:green')
-    ax[2].set_title("Pressure Over Time")
-    ax[2].set_xlabel("Timestamp")
-    ax[2].set_ylabel("Pressure (hPa)")
-    ax[2].legend()
+    # Plot temperature
+    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
+    ax[0].set_ylabel('Temperature (°C)')
+    ax[0].set_title('Temperature')
 
+    # Plot humidity
+    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
+    ax[1].set_ylabel('Humidity (%)')
+    ax[1].set_title('Humidity')
+
+    # Plot pressure
+    ax[2].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['PRES_predicted'], marker='o')
+    ax[2].set_ylabel('Pressure')
+    ax[2].set_title('Pressure')
+
+    # Plot US
+    ax[3].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['US_predicted'], marker='o')
+    ax[3].set_ylabel('US')
+    ax[3].set_title('US')
+
+    # Plot Soil
+    ax[4].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['SOIL1_predicted'], marker='o')
+    ax[4].set_ylabel('Soil')
+    ax[4].set_title('Soil')
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Show the plots vertically
     st.pyplot(fig)
 
-if __name__ == "__main__":
-    main()
+
+# Set page configuration
+st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
+
+
+
+# Load custom CSS
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+with open(css_file_path) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Get the absolute path to the current directory
+current_dir = os.path.dirname(os.path.abspath(_file_))
+
+# Function to construct the file path
+def get_file_path(filename):
+    return os.path.join(current_dir, filename)
+
+# Cache the data loading function
+@st.cache_data
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    data['timestamp'] = pd.to_datetime(data['timestamp'])
+    return data
+
+
+# Cache the function to calculate average values
+@st.cache_data
+def calculate_averages(data):
+    avg_values = {
+        "TC": data["TC"].mean(),
+        "HUM": data["HUM"].mean(),
+        "PRES": data["PRES"].mean(),
+        "US": data["US"].mean(),
+        "SOIL1": data["SOIL1"].mean()
+    }
+    return avg_values
+
+
+
+# Load the data
+data = load_data(get_file_path('cleaned_data.csv'))
+avg_values = calculate_averages(data)
+
+# Page title
+st.title("Welcome to the Smart Agriculture Dashboard")
+
+
+
+# Main content with average values
+st.markdown(f"""
+<div class="main">
+    <div class="card-row">
+        <div class="card-column">
+            <div class="card" onclick="navigateTo('pages/Temperature.py')">
+                <div class="icon">☀️</div>
+                <h2>Temperature</h2>
+                <p>Average: {avg_values["TC"]:.2f}°C</p>
+            </div>
+        </div>
+        <div class="card-column">
+            <div class="card" onclick="navigateTo('/Humidity')">
+                <div class="icon">💧</div>
+                <h2>Humidity</h2>
+                <p>Average: {avg_values["HUM"]:.2f}%</p>
+            </div>
+        </div>
+        <div class="card-column">
+            <div class="card" onclick="navigateTo('/Air_Pressure')">
+                <div class="icon">🌬️</div>
+                <h2>Air Pressure</h2>
+                <p>Average: {avg_values["PRES"]:.2f} hPa</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-row">
+        <div class="card-column">
+            <div class="card" onclick="navigateTo('/Ultrasound')">
+                <div class="icon">📡</div>
+                <h2>Ultrasound</h2>
+                <p>Average: {avg_values["US"]:.2f}</p>
+            </div>
+        </div>
+        <div class="card-column">
+            <div class="card" onclick="navigateTo('/Soil_Moisture')">
+                <div class="icon">🌱</div>
+                <h2>Soil Moisture</h2>
+                <p>Average: {avg_values["SOIL1"]:.2f}%</p>
+            </div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Visualization section title
+st.header("Parameter Visualizations")
+
+# Visualization section with sampling
+st.markdown("<div class='main'>", unsafe_allow_html=True)
+
+# Sample data for visualization to improve performance
+sampled_data = data.sample(n=5000)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Temperature")
+    st.line_chart(sampled_data.set_index('timestamp')['TC'])
+
+    st.subheader("Humidity")
+    st.line_chart(sampled_data.set_index('timestamp')['HUM'])
+
+with col2:
+    st.subheader("Air Pressure")
+    st.line_chart(sampled_data.set_index('timestamp')['PRES'])
+
+    st.subheader("Ultrasound")
+    st.line_chart(sampled_data.set_index('timestamp')['US'])
+
+    st.subheader("Soil Moisture")
+    st.line_chart(sampled_data.set_index('timestamp')['SOIL1'])
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Footer
+st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
