@@ -91,11 +91,11 @@ if col4.button("Show Soil Moisture Scatter Plot"):
 # Display the corresponding chart based on the current chart type
 if st.session_state.current_chart == 'line':
     st.markdown("<div class='card1'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
-    st.line_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
+    st.line_chart(soil_data.set_index('timestamp')['SOIL1'],color='#77b5fe')
 
 elif st.session_state.current_chart == 'bar':
     st.markdown("<div class='card1'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
-    st.bar_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
+    st.bar_chart(soil_data.set_index('timestamp')['SOIL1'],color='#77b5fe')
 
 elif st.session_state.current_chart == 'pie':
     st.markdown("<div class='card1'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
