@@ -7,9 +7,6 @@ import pytz
 
 
 
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
-
 # Load custom CSS
 css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
@@ -49,7 +46,7 @@ data = load_data(get_file_path('cleaned_data.csv'))
 avg_values = calculate_averages(data)
 
 # Page title
-st.title("Welcome to the Smart Agriculture Dashboard")
+st.title("Welcome to the Smart Agriculture ")
 
 
 
