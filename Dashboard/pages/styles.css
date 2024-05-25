@@ -30,6 +30,7 @@ h1, h2, h3 {
     text-align: center;
     border: 2px solid transparent; /* Shto një kufi fillestar të padukshëm */
     transition: transform 0.3s ease, border-color 0.3s ease; /* Shto tranzicion për border-color */
+    border-color: darkblue;
 }
 
 .card h2 {
@@ -88,6 +89,7 @@ footer {
 
 [data-testid="stSidebar"] {
     background-color: #ebf9fd;
+    
 }
 
 .st-emotion-cache-18ni7ap{
