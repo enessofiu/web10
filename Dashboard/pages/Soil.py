@@ -4,6 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
+# Set page configuration to wide mode
+st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
+
+
 def get_file_path(filename):
     """
     Constructs the absolute path to the data file.
