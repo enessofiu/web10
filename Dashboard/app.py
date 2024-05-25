@@ -108,7 +108,7 @@ def main():
     # Weather icon and temperature
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
+        st.image('download.jpg', use_column_width=True)
     with col2:
         st.markdown(f"### {current_data['TC_predicted']:.2f}°C")
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
