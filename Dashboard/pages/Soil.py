@@ -63,7 +63,7 @@ soil_data = data[['timestamp', 'SOIL1']]
 st.markdown("<div class='header'>Soil Moisture (SOIL1) Visualizations</div>", unsafe_allow_html=True)
 
 # Page title
-st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
 # Initialize or get the session state to track the current chart type
 if 'current_chart' not in st.session_state:
@@ -90,15 +90,15 @@ if col4.button("Show Soil Moisture Scatter Plot"):
 
 # Display the corresponding chart based on the current chart type
 if st.session_state.current_chart == 'line':
-    st.markdown("<div class='card'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Soil Moisture Over Time</h3></div>", unsafe_allow_html=True)
     st.line_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
 
 elif st.session_state.current_chart == 'bar':
-    st.markdown("<div class='card'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Soil Moisture Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(soil_data.set_index('timestamp')['SOIL1'],color='#365341')
 
 elif st.session_state.current_chart == 'pie':
-    st.markdown("<div class='card'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Soil Moisture Proportions</h3></div>", unsafe_allow_html=True)
     soil_bins = pd.cut(soil_data['SOIL1'], bins=5)
     soil_pie_data = soil_bins.value_counts().reset_index()
     soil_pie_data.columns = ['Soil Moisture Range', 'Count']
@@ -107,7 +107,7 @@ elif st.session_state.current_chart == 'pie':
     st.pyplot(fig)
 
 elif st.session_state.current_chart == 'scatter':
-    st.markdown("<div class='card'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Soil Moisture Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='SOIL1', data=soil_data, ax=ax)
     st.pyplot(fig)
