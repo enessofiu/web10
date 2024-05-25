@@ -68,7 +68,7 @@ us_data = data[['timestamp', 'US']]
 st.markdown("<div class='header'>Ultrasound (US) Visualizations</div>", unsafe_allow_html=True)
 
 # Page title
-st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
 # Initialize or get the session state to track the current chart type
 if 'current_chart' not in st.session_state:
@@ -95,15 +95,15 @@ if col4.button("Show Scatter Plot"):
 
 # Display the corresponding chart based on the current chart type
 if st.session_state.current_chart == 'line':
-    st.markdown("<div class='card'><h3>Ultrasound Over Time</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Ultrasound Over Time</h3></div>", unsafe_allow_html=True)
     st.line_chart(us_data.set_index('timestamp')['US'],color='#365341')
 
 elif st.session_state.current_chart == 'bar':
-    st.markdown("<div class='card'><h3>Ultrasound Distribution</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Ultrasound Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(us_data.set_index('timestamp')['US'],color='#365341')
 
 elif st.session_state.current_chart == 'pie':
-    st.markdown("<div class='card'><h3>Ultrasound Proportions</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Ultrasound Proportions</h3></div>", unsafe_allow_html=True)
     us_bins = pd.cut(us_data['US'], bins=5)
     us_pie_data = us_bins.value_counts().reset_index()
     us_pie_data.columns = ['Ultrasound Range', 'Count']
@@ -112,7 +112,7 @@ elif st.session_state.current_chart == 'pie':
     st.pyplot(fig)
 
 elif st.session_state.current_chart == 'scatter':
-    st.markdown("<div class='card'><h3>Ultrasound Scatter Plot</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Ultrasound Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='US', data=us_data, ax=ax)
     st.pyplot(fig)
