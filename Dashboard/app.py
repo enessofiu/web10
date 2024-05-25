@@ -59,7 +59,7 @@ st.markdown(f"""
 <div class="main">
     <div class="card-row">
         <div class="card-column">
-            <div class="card" onclick="navigateTo('pages/Temperature.py')">
+            <div class="card1" onclick="navigateTo('pages/Temperature.py')">
                 <div class="icon">☀️</div>
                 <h2>Temperature</h2>
                 <p>Average: {avg_values["TC"]:.2f}°C</p>
