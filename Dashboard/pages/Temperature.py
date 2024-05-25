@@ -66,7 +66,7 @@ temp_data = data[['timestamp', 'TC']]
 st.markdown("<div class='header'>Temperature (TC) Visualizations</div>", unsafe_allow_html=True)
 
 # Page title
-st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
 # Initialize or get the session state to track the current chart type
 if 'current_chart' not in st.session_state:
@@ -93,15 +93,15 @@ if col4.button("Show Scatter Plot"):
 
 # Display the corresponding chart based on the current chart type
 if st.session_state.current_chart == 'line':
-    st.markdown("<div class='card'><h3>Temperature Over Time</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Temperature Over Time</h3></div>", unsafe_allow_html=True)
     st.line_chart(temp_data.set_index('timestamp')['TC'],color='#365341')
 
 elif st.session_state.current_chart == 'bar':
-    st.markdown("<div class='card'><h3>Temperature Distribution</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Temperature Distribution</h3></div>", unsafe_allow_html=True)
     st.bar_chart(temp_data.set_index('timestamp')['TC'],color='#365341')
 
 elif st.session_state.current_chart == 'pie':
-    st.markdown("<div class='card'><h3>Temperature Proportions</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Temperature Proportions</h3></div>", unsafe_allow_html=True)
     temp_bins = pd.cut(temp_data['TC'], bins=5)
     temp_pie_data = temp_bins.value_counts().reset_index()
     temp_pie_data.columns = ['Temperature Range', 'Count']
@@ -110,7 +110,7 @@ elif st.session_state.current_chart == 'pie':
     st.pyplot(fig)
 
 elif st.session_state.current_chart == 'scatter':
-    st.markdown("<div class='card'><h3>Temperature Scatter Plot</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='card1'><h3>Temperature Scatter Plot</h3></div>", unsafe_allow_html=True)
     fig, ax = plt.subplots()
     sns.scatterplot(x='timestamp', y='TC', data=temp_data, ax=ax)
     st.pyplot(fig)
