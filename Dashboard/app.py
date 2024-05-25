@@ -5,36 +5,44 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-# Titulli i aplikacionit
-st.title('Weather Dashboard')
+# Set page configuration
+st.set_page_config(page_title="Weather and Agriculture Dashboard", layout="wide")
 
-# Load custom CSS (assuming your CSS file is named "styles.css")
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
+# Load custom CSS
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Function to construct the file path
 def get_file_path(filename):
-    """
-    Constructs the absolute path to the data file.
-
-    Args:
-        filename (str): The name of the data file (e.g., "predicted_data_2024.csv").
-
-    Returns:
-        str: The absolute path to the data file.
-    """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(_file_))
     return os.path.join(current_dir, filename)
 
-# Define the filename
-data_file = "predicted_data_2024.csv"
+# Cache the data loading function
+@st.cache_data
+def load_data(file_path):
+    data = pd.read_csv(file_path)
+    data['timestamp'] = pd.to_datetime(data['timestamp'])
+    return data
 
-# Load dataset
-df = pd.read_csv(get_file_path(data_file))
+# Cache the function to calculate average values
+@st.cache_data
+def calculate_averages(data):
+    avg_values = {
+        "TC": data["TC"].mean(),
+        "HUM": data["HUM"].mean(),
+        "PRES": data["PRES"].mean(),
+        "US": data["US"].mean(),
+        "SOIL1": data["SOIL1"].mean()
+    }
+    return avg_values
+
+# Load the main dataset
+data_file = "predicted_data_2024.csv"
+data = load_data(get_file_path(data_file))
 
 # Convert the timestamp column to datetime
-df['timestamp'] = pd.to_datetime(df['timestamp'])
+data['timestamp'] = pd.to_datetime(data['timestamp'])
 
 # Set timezone to GMT+1
 tz = pytz.timezone('Europe/Belgrade')  # Prizren is in the same timezone as Belgrade
@@ -92,7 +100,7 @@ def main():
     current_datetime = get_current_time_gmt_plus_1()
 
     # Filter data for the current date
-    df_today = get_today_data(df, current_datetime)
+    df_today = get_today_data(data, current_datetime)
 
     # Extract the latest data point for current conditions
     if not df_today.empty:
@@ -201,7 +209,7 @@ def main():
         st.error("No data available for the forecast.")
 
     # Calculate the 3-day forecast
-    forecast_data_3_days = calculate_3_day_forecast(df, current_datetime)
+    forecast_data_3_days = calculate_3_day_forecast(data, current_datetime)
 
     # Display forecast for the next 3 days
     st.subheader('3 Days Forecast')
@@ -215,8 +223,8 @@ def main():
         }
         st.markdown(
             f"""
-            <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
-                <h3 style="color:white">Day {i+1} Forecast</h3>
+            <div style="background-color:#3498db;padding:10px;border-radius:5px;margin-top:10px;">
+                <h3 style="color:white">{(current_datetime + timedelta(days=i+1)).strftime('%A')}</h3>
                 <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Temperature</h4>
@@ -244,46 +252,35 @@ def main():
             unsafe_allow_html=True
         )
 
-    # Temperature and Humidity Analytics for Today
-    st.subheader('Analytics for Today')
+    # Display data visualization options
+    st.sidebar.title("Data Visualization")
+    chart_type = st.sidebar.selectbox("Select Chart Type", ["Line Chart", "Bar Chart"])
+    column_to_plot = st.sidebar.selectbox("Select Column", ["TC", "HUM", "PRES", "US", "SOIL1"])
 
-    # Resample the data for visualization
-    df_today_resampled = df_today.set_index('timestamp').resample('3H').mean()
+    if chart_type == "Line Chart":
+        st.subheader(f"{column_to_plot} - Line Chart")
+        fig, ax = plt.subplots()
+        ax.plot(data['timestamp'], data[column_to_plot], label=column_to_plot)
+        ax.set_xlabel("Timestamp")
+        ax.set_ylabel(column_to_plot)
+        ax.legend()
+        st.pyplot(fig)
 
-    # Show the plots for temperature, humidity, pressure, US, and Soil vertically
-    fig, ax = plt.subplots(5, 1, figsize=(10, 15))
+    elif chart_type == "Bar Chart":
+        st.subheader(f"{column_to_plot} - Bar Chart")
+        fig, ax = plt.subplots()
+        ax.bar(data['timestamp'], data[column_to_plot], label=column_to_plot)
+        ax.set_xlabel("Timestamp")
+        ax.set_ylabel(column_to_plot)
+        ax.legend()
+        st.pyplot(fig)
 
-    # Plot temperature
-    ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax[0].set_ylabel('Temperature (°C)')
-    ax[0].set_title('Temperature')
+    # Display data analytics options
+    st.sidebar.title("Data Analytics")
+    if st.sidebar.button("Calculate Averages"):
+        avg_values = calculate_averages(data)
+        st.subheader("Average Values")
+        st.write(avg_values)
 
-    # Plot humidity
-    ax[1].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['HUM_predicted'], marker='o')
-    ax[1].set_ylabel('Humidity (%)')
-    ax[1].set_title('Humidity')
-
-    # Plot pressure
-    ax[2].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['PRES_predicted'], marker='o')
-    ax[2].set_ylabel('Pressure')
-    ax[2].set_title('Pressure')
-
-    # Plot US
-    ax[3].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['US_predicted'], marker='o')
-    ax[3].set_ylabel('US')
-    ax[3].set_title('US')
-
-    # Plot Soil
-    ax[4].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['SOIL1_predicted'], marker='o')
-    ax[4].set_ylabel('Soil')
-    ax[4].set_title('Soil')
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Show the plots vertically
-    st.pyplot(fig)
-
-# Run the main function
-if __name__ == '__main__':
+if _name_ == "_main_":
     main()
