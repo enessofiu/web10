@@ -60,7 +60,9 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 # Filter for Air Pressure (PRES)
 pres_data = data[['timestamp', 'PRES']]
 
-st.markdown("<div class='header'>Air Pressure (PRES) Visualizations</div>", unsafe_allow_html=True)
+st.title("Welcome to the Smart Agriculture Dashboard")
+
+st.title("Air Pressure (PRES) Visualizations")
 
 # Page title
 st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
