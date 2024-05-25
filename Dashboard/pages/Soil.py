@@ -60,7 +60,7 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 soil_data = data[['timestamp', 'SOIL1']]
 
 # Page title
-st.markdown("<div class='header'>Soil Moisture (SOIL1) Visualizations</div>", unsafe_allow_html=True)
+st.title("Soil Moisture (SOIL1) Visualizations")
 
 # Page title
 st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
