@@ -89,11 +89,11 @@ if os.path.exists(data_path):
     # Display corresponding chart based on the current chart type
     if current_chart == 'line':
         st.markdown("<div class='card1'><h3>Humidity Over Time</h3></div>", unsafe_allow_html=True)
-        st.line_chart(hum_data.set_index('timestamp')['HUM'],color='#365341')
+        st.line_chart(hum_data.set_index('timestamp')['HUM'],color='#77b5fe')
 
     elif current_chart == 'bar':
         st.markdown("<div class='card1'><h3>Humidity Distribution</h3></div>", unsafe_allow_html=True)
-        st.bar_chart(hum_data.set_index('timestamp')['HUM'],color='#365341')
+        st.bar_chart(hum_data.set_index('timestamp')['HUM'],color='#77b5fe')
 
     elif current_chart == 'pie':
         st.markdown("<div class='card1'><h3>Humidity Proportions</h3></div>", unsafe_allow_html=True)
