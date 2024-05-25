@@ -171,7 +171,7 @@ def main():
             f"""
             <div style="background-color:#3498db;padding:10px;border-radius:5px">
                 <h3 style="color:white">Today's Forecast</h3>
-                <div style="display:flex;">
+                <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Temperature</h4>
                         <p style="color:white">{forecast_data_actual_day['TC_predicted']:.2f}°C</p>
@@ -217,7 +217,7 @@ def main():
             f"""
             <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
                 <h3 style="color:white">Day {i+1} Forecast</h3>
-                <div style="display:flex;">
+                <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Temperature</h4>
                         <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
