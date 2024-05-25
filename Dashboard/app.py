@@ -255,7 +255,7 @@ def main():
     # Display data visualization options
     st.sidebar.title("Data Visualization")
     chart_type = st.sidebar.selectbox("Select Chart Type", ["Line Chart", "Bar Chart"])
-    column_to_plot = st.sidebar.selectbox("Select Column", ["TC", "HUM", "PRES", "US", "SOIL1"])
+    column_to_plot = st.sidebar.selectbox("Select Column", ["TC_predicted", "HUM_predicted", "PRES_predicted", "US_predicted", "SOIL1_predicted"])
 
     if chart_type == "Line Chart":
         st.subheader(f"{column_to_plot} - Line Chart")
