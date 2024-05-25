@@ -87,8 +87,6 @@ def calculate_3_day_forecast(df, current_datetime):
             forecast_data['US_predicted'].append(None)
             forecast_data['SOIL1_predicted'].append(None)
     return forecast_data
-
-# Main dashboard function
 def main():
     # Get current datetime in GMT+1
     current_datetime = get_current_time_gmt_plus_1()
@@ -103,11 +101,11 @@ def main():
         st.error("No data available for today.")
         return
 
-    # Lokacioni aktual
+    # Current Location
     current_location = 'Prizren, Kosovë'
     st.subheader(f'Current Location: {current_location}')
 
-    # Ikona e motit dhe temperatura
+    # Weather icon and temperature
     col1, col2 = st.columns([3, 1])
     with col1:
         st.image('https://upload.wikimedia.org/wikipedia/commons/a/a6/Golden_Gate_Bridge_fog.JPG', use_column_width=True)
@@ -116,65 +114,57 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-    # Pikat kryesore të ditës
     # Today's Highlights
     st.markdown(
-    f"""
-    <style>
-        .highlight-box {{
-            background-color: #3498db;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px;
-        }}
-        .highlight-box h3, .highlight-box h4, .highlight-box p {{
-            color: white;
-            margin: 5px;
-        }}
-        .highlight-box .highlight-item {{
-            flex: 1;
-            padding: 5px;
-        }}
-        @media only screen and (max-width: 600px) {{
+        f"""
+        <style>
             .highlight-box {{
+                background-color: #3498db;
+                padding: 10px;
+                border-radius: 5px;
+                margin: 10px;
+            }}
+            .highlight-box h3, .highlight-box h4, .highlight-box p {{
+                color: white;
+                margin: 5px;
+            }}
+            .highlight-box .highlight-item {{
+                flex: 1;
                 padding: 5px;
             }}
-        }}
-    </style>
-    <div class="highlight-box">
-        <h3>Today's Highlights</h3>
-        <div style="display:flex; flex-wrap: wrap;">
-            <div class="highlight-item">
-                <h4>Soil</h4>
-                <p>{current_data['SOIL1_predicted']:.2f}%</p>
-            </div>
-            <div class="highlight-item">
-                <h4>Humidity</h4>
-                <p>{current_data['HUM_predicted']:.2f}%</p>
-            </div>
-            <div class="highlight-item">
-                <h4>Wind</h4>
-                <p>{current_data['PRES_predicted']:.2f} km/h</p>
-            </div>
-            <div class="highlight-item">
-                <h4>Ultrasound</h4>
-                <p>{current_data['US_predicted']:.2f}</p>
+            @media only screen and (max-width: 600px) {{
+                .highlight-box {{
+                    padding: 5px;
+                }}
+            }}
+        </style>
+        <div class="highlight-box">
+            <h3>Today's Highlights</h3>
+            <div style="display:flex; flex-wrap: wrap;">
+                <div class="highlight-item">
+                    <h4>Soil</h4>
+                    <p>{current_data['SOIL1_predicted']:.2f}%</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Humidity</h4>
+                    <p>{current_data['HUM_predicted']:.2f}%</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Wind</h4>
+                    <p>{current_data['PRES_predicted']:.2f} km/h</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Ultrasound</h4>
+                    <p>{current_data['US_predicted']:.2f}</p>
+                </div>
             </div>
         </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True
+    )
 
-
-    # Parashikimi për 3 ditët e ardhshme
- # Display forecast for the next 3 days
-    
-    
-    st.subheader('3 Days Forecast')
+    # Today's Forecast
     forecast_data_actual_day = calculate_actual_day_forecast(df_today)
-
-    
 
     if forecast_data_actual_day:
         st.markdown(
@@ -210,9 +200,13 @@ def main():
     else:
         st.error("No data available for the forecast.")
 
+    # Calculate the 3-day forecast
+    forecast_data_3_days = calculate_3_day_forecast(df, current_datetime)
+
     # Display forecast for the next 3 days
+    st.subheader('3 Days Forecast')
     for i in range(3):
-        forecast_data_day = forecast_data_3_days[i]
+        forecast_data_day = forecast_data_3_days['TC_predicted'][i], forecast_data_3_days['HUM_predicted'][i], forecast_data_3_days['PRES_predicted'][i], forecast_data_3_days['US_predicted'][i], forecast_data_3_days['SOIL1_predicted'][i]
         st.markdown(
             f"""
             <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
@@ -220,29 +214,30 @@ def main():
                 <div style="display:flex;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Temperature</h4>
-                        <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
+                        <p style="color:white">{forecast_data_day[0]:.2f}°C</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Humidity</h4>
-                        <p style="color:white">{forecast_data_day['HUM_predicted']:.2f}%</p>
+                        <p style="color:white">{forecast_data_day[1]:.2f}%</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Pressure</h4>
-                        <p style="color:white">{forecast_data_day['PRES_predicted']:.2f}</p>
+                        <p style="color:white">{forecast_data_day[2]:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">US</h4>
-                        <p style="color:white">{forecast_data_day['US_predicted']:.2f}</p>
+                        <p style="color:white">{forecast_data_day[3]:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Soil</h4>
-                        <p style="color:white">{forecast_data_day['SOIL1_predicted']:.2f}</p>
+                        <p style="color:white">{forecast_data_day[4]:.2f}</p>
                     </div>
                 </div>
             </div>
             """,
             unsafe_allow_html=True
         )
+
     # Temperature and Humidity Analytics for Today
     st.subheader('Analytics for Today')
 
