@@ -4,6 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
+# Set page configuration to wide mode
+st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
+
+
 # Get the absolute path to the current directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
