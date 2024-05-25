@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
 import pytz
-import time
 
 # Titulli i aplikacionit
 st.title('Weather Dashboard')
@@ -87,6 +86,7 @@ def calculate_3_day_forecast(df, current_datetime):
             forecast_data['US_predicted'].append(None)
             forecast_data['SOIL1_predicted'].append(None)
     return forecast_data
+
 def main():
     # Get current datetime in GMT+1
     current_datetime = get_current_time_gmt_plus_1()
@@ -114,15 +114,9 @@ def main():
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
-
-
-    # Today's Forecast
-    forecast_data_actual_day = calculate_actual_day_forecast(df_today)
-
-    if forecast_data_actual_day:
-        st.markdown(
-            f"""
-                   
+    # Today's Highlights
+    st.markdown(
+        f"""
         <style>
             .highlight-box {{
                 background-color: #3498db;
@@ -144,6 +138,37 @@ def main():
                 }}
             }}
         </style>
+        <div class="highlight-box">
+            <h3>Today's Highlights</h3>
+            <div style="display:flex; flex-wrap: wrap;">
+                <div class="highlight-item">
+                    <h4>Soil</h4>
+                    <p>{current_data['SOIL1_predicted']:.2f}%</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Humidity</h4>
+                    <p>{current_data['HUM_predicted']:.2f}%</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Pressure</h4>
+                    <p>{current_data['PRES_predicted']:.2f} km/h</p>
+                </div>
+                <div class="highlight-item">
+                    <h4>Ultrasound</h4>
+                    <p>{current_data['US_predicted']:.2f}</p>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Today's Forecast
+    forecast_data_actual_day = calculate_actual_day_forecast(df_today)
+
+    if forecast_data_actual_day:
+        st.markdown(
+            f"""
             <div style="background-color:#3498db;padding:10px;border-radius:5px">
                 <h3 style="color:white">Today's Forecast</h3>
                 <div style="display:flex;">
@@ -181,7 +206,13 @@ def main():
     # Display forecast for the next 3 days
     st.subheader('3 Days Forecast')
     for i in range(3):
-        forecast_data_day = forecast_data_3_days['TC_predicted'][i], forecast_data_3_days['HUM_predicted'][i], forecast_data_3_days['PRES_predicted'][i], forecast_data_3_days['US_predicted'][i], forecast_data_3_days['SOIL1_predicted'][i]
+        forecast_data_day = {
+            'TC_predicted': forecast_data_3_days['TC_predicted'][i],
+            'HUM_predicted': forecast_data_3_days['HUM_predicted'][i],
+            'PRES_predicted': forecast_data_3_days['PRES_predicted'][i],
+            'US_predicted': forecast_data_3_days['US_predicted'][i],
+            'SOIL1_predicted': forecast_data_3_days['SOIL1_predicted'][i]
+        }
         st.markdown(
             f"""
             <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
@@ -189,23 +220,23 @@ def main():
                 <div style="display:flex;">
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Temperature</h4>
-                        <p style="color:white">{forecast_data_day[0]:.2f}°C</p>
+                        <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Humidity</h4>
-                        <p style="color:white">{forecast_data_day[1]:.2f}%</p>
+                        <p style="color:white">{forecast_data_day['HUM_predicted']:.2f}%</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Pressure</h4>
-                        <p style="color:white">{forecast_data_day[2]:.2f}</p>
+                        <p style="color:white">{forecast_data_day['PRES_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">US</h4>
-                        <p style="color:white">{forecast_data_day[3]:.2f}</p>
+                        <p style="color:white">{forecast_data_day['US_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
                         <h4 style="color:white">Soil</h4>
-                        <p style="color:white">{forecast_data_day[4]:.2f}</p>
+                        <p style="color:white">{forecast_data_day['SOIL1_predicted']:.2f}</p>
                     </div>
                 </div>
             </div>
