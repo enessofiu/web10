@@ -12,12 +12,12 @@ st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
 
 
 # Load custom CSS
-css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
+css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(_file_))
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Function to construct the file path
 def get_file_path(filename):
