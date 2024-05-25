@@ -6,7 +6,6 @@ import os
 import pytz
 
 
-
 # Load custom CSS
 css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
 with open(css_file_path) as f:
