@@ -328,6 +328,10 @@ def main():
     # Show the plots vertically
     st.pyplot(fig)
 
+
+# Footer
+st.markdown("<footer>Smart Agriculture Dashboard ©️ 2024</footer>", unsafe_allow_html=True)
+
 # Run the main function
 if __name__ == '__main__':
     main()
