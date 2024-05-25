@@ -56,8 +56,7 @@ if os.path.exists(data_path):
     # Filter for Humidity (HUM)
     hum_data = data[['timestamp', 'HUM']]
 
-    # Page title
-    st.markdown("<div class='header'>Humidity (HUM) Visualizations</div>", unsafe_allow_html=True)
+    st.title("Humidity (HUM) Visualizations")
 
     cols = st.columns(5)
 
