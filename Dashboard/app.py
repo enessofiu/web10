@@ -122,6 +122,28 @@ def main():
     if forecast_data_actual_day:
         st.markdown(
             f"""
+                   
+        <style>
+            .highlight-box {{
+                background-color: #3498db;
+                padding: 10px;
+                border-radius: 5px;
+                margin: 10px;
+            }}
+            .highlight-box h3, .highlight-box h4, .highlight-box p {{
+                color: white;
+                margin: 5px;
+            }}
+            .highlight-box .highlight-item {{
+                flex: 1;
+                padding: 5px;
+            }}
+            @media only screen and (max-width: 600px) {{
+                .highlight-box {{
+                    padding: 5px;
+                }}
+            }}
+        </style>
             <div style="background-color:#3498db;padding:10px;border-radius:5px">
                 <h3 style="color:white">Today's Forecast</h3>
                 <div style="display:flex;">
