@@ -63,7 +63,7 @@ pres_data = data[['timestamp', 'PRES']]
 st.markdown("<div class='header'>Air Pressure (PRES) Visualizations</div>", unsafe_allow_html=True)
 
 # Page title
-st.markdown("<div class='card'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
+st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
 
 
 # Initialize variable to track current chart type
