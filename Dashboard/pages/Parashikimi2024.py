@@ -169,6 +169,6 @@ st.line_chart(filtered_data.set_index("timestamp")[parameter])
 # Display min and max values
 min_value = filtered_data[parameter].min()
 max_value = filtered_data[parameter].max()
-st.markdown(f"<div class='card1'><p>Min {parameter_dict[parameter]}: {min_value}</p><p>Max {parameter_dict[parameter]}: {max_value}</p></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='card1'><p>Min {parameter_dict[parameter]}:.2f {min_value}</p><p>Max {parameter_dict[parameter]}: {max_value}</p></div>", unsafe_allow_html=True)
 
 st.markdown("<footer>Smart Agriculture Dashboard © 2024</footer>", unsafe_allow_html=True)
