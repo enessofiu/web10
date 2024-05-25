@@ -38,11 +38,11 @@ def load_data(file_path):
 @st.cache_data
 def calculate_averages(data):
     avg_values = {
-        "TC": data["TC"].mean(),
-        "HUM": data["HUM"].mean(),
-        "PRES": data["PRES"].mean(),
-        "US": data["US"].mean(),
-        "SOIL1": data["SOIL1"].mean()
+        "TC": data["TC_predicted"].mean(),
+        "HUM": data["HUM_predicted"].mean(),
+        "PRES": data["PRES_predicted"].mean(),
+        "US": data["US_predicted"].mean(),
+        "SOIL1": data["SOIL1_predicted"].mean()
     }
     return avg_values
 
