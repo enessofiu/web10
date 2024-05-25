@@ -12,12 +12,12 @@ st.set_page_config(page_title="Smart Agriculture Dashboard", layout="wide")
 
 
 # Load custom CSS
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Get the absolute path to the current directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(os.path.abspath(_file_))
 
 # Function to construct the file path
 def get_file_path(filename):
@@ -100,7 +100,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Load custom CSS (assuming your CSS file is named "styles.css")
-css_file_path = os.path.join(os.path.dirname(__file__), "styles.css")
+css_file_path = os.path.join(os.path.dirname(_file_), "styles.css")
 with open(css_file_path) as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
@@ -115,7 +115,7 @@ def get_file_path(filename):
     Returns:
         str: The absolute path to the data file.
     """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = os.path.dirname(os.path.abspath(_file_))
     return os.path.join(current_dir, filename)
 
 # Define the filename
@@ -213,28 +213,28 @@ def main():
     if forecast_data_actual_day:
         st.markdown(
             f"""
-            <div style="background-color:#3498db;padding:10px;border-radius:5px">
-                <h3 style="color:white">Today's Forecast</h3>
+            <div class="card1" style="background-color:#ebf9fd;padding:10px;border-radius:5px">
+                <h3 style="color:black">Today's Forecast</h3>
                 <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Temperature</h4>
-                        <p style="color:white">{forecast_data_actual_day['TC_predicted']:.2f}°C</p>
+                        <h4 style="color:black">Temperature</h4>
+                        <p style="color:black">{forecast_data_actual_day['TC_predicted']:.2f}°C</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Humidity</h4>
-                        <p style="color:white">{forecast_data_actual_day['HUM_predicted']:.2f}%</p>
+                        <h4 style="color:black">Humidity</h4>
+                        <p style="color:black">{forecast_data_actual_day['HUM_predicted']:.2f}%</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Pressure</h4>
-                        <p style="color:white">{forecast_data_actual_day['PRES_predicted']:.2f}</p>
+                        <h4 style="color:black">Pressure</h4>
+                        <p style="color:black">{forecast_data_actual_day['PRES_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">US</h4>
-                        <p style="color:white">{forecast_data_actual_day['US_predicted']:.2f}</p>
+                        <h4 style="color:black">US</h4>
+                        <p style="color:black">{forecast_data_actual_day['US_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Soil</h4>
-                        <p style="color:white">{forecast_data_actual_day['SOIL1_predicted']:.2f}</p>
+                        <h4 style="color:black">Soil</h4>
+                        <p style="color:black">{forecast_data_actual_day['SOIL1_predicted']:.2f}</p>
                     </div>
                 </div>
             </div>
@@ -259,28 +259,28 @@ def main():
         }
         st.markdown(
             f"""
-            <div style="background-color:#3498db;padding:10px;margin-top:10px;border-radius:5px">
-                <h3 style="color:white">Day {i+1} Forecast</h3>
+            <div class="card1" style="background-color:#ebf9fd;padding:10px;margin-top:10px;border-radius:5px">
+                <h3 style="color:cdcdcd">Day {i+1} Forecast</h3>
                 <div style="display:flex; flex-wrap: wrap;">
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Temperature</h4>
-                        <p style="color:white">{forecast_data_day['TC_predicted']:.2f}°C</p>
+                        <h4 style="color:cdcdcd">Temperature</h4>
+                        <p style="color:cdcdcd">{forecast_data_day['TC_predicted']:.2f}°C</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Humidity</h4>
-                        <p style="color:white">{forecast_data_day['HUM_predicted']:.2f}%</p>
+                        <h4 style="color:cdcdcd">Humidity</h4>
+                        <p style="color:cdcdcd">{forecast_data_day['HUM_predicted']:.2f}%</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Pressure</h4>
-                        <p style="color:white">{forecast_data_day['PRES_predicted']:.2f}</p>
+                        <h4 style="color:cdcdcd">Pressure</h4>
+                        <p style="color:cdcdcd">{forecast_data_day['PRES_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">US</h4>
-                        <p style="color:white">{forecast_data_day['US_predicted']:.2f}</p>
+                        <h4 style="color:cdcdcd">US</h4>
+                        <p style="color:cdcdcd">{forecast_data_day['US_predicted']:.2f}</p>
                     </div>
                     <div style="flex:1;padding:10px;">
-                        <h4 style="color:white">Soil</h4>
-                        <p style="color:white">{forecast_data_day['SOIL1_predicted']:.2f}</p>
+                        <h4 style="color:cdcdcd">Soil</h4>
+                        <p style="color:cdcdcd">{forecast_data_day['SOIL1_predicted']:.2f}</p>
                     </div>
                 </div>
             </div>
@@ -329,5 +329,5 @@ def main():
     st.pyplot(fig)
 
 # Run the main function
-if __name__ == '__main__':
+if _name_ == '_main_':
     main()
