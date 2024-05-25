@@ -115,7 +115,7 @@ def get_file_path(filename):
     Returns:
         str: The absolute path to the data file.
     """
-    current_dir = os.path.dirname(os.path.abspath(_file_))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, filename)
 
 # Define the filename
