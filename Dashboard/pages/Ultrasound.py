@@ -65,7 +65,7 @@ data['timestamp'] = pd.to_datetime(data['timestamp'])
 us_data = data[['timestamp', 'US']]
 
 # Page title
-st.markdown("<div class='header'>Ultrasound (US) Visualizations</div>", unsafe_allow_html=True)
+st.title("Ultrasound (US) Visualizations")
 
 # Page title
 st.markdown("<div class='card1'><h3>Choose a Visualizations</h3></div>", unsafe_allow_html=True)
