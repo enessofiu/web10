@@ -299,7 +299,7 @@ def main():
 
     # Plot temperature
     ax[0].plot(df_today_resampled.index.strftime('%I %p'), df_today_resampled['TC_predicted'], marker='o')
-    ax[0].set_ylabel('Temperature (°C)')
+    ax[0].set_ylabel('Temperature (°F)')
     ax[0].set_title('Temperature')
 
     # Plot humidity
