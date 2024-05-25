@@ -201,7 +201,7 @@ def main():
     with col1:
         st.image('download.jpg', use_column_width=True)
     with col2:
-        st.markdown(f"### {current_data['TC_predicted']:.2f}°C")
+        st.markdown(f"### {current_data['TC_predicted']:.2f}°F")
         st.markdown(f"#### {current_datetime.strftime('%A, %I:%M:%S %p')}")
         st.markdown('##### Partly Cloudy')
 
